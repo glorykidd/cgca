@@ -34,9 +34,17 @@ jobs:
         with:
           utcOffset: "00:00"
           format: YYYY.MM.DD-HH.mm
+      - name: Run Tests
+        run: |
+          cd cgca.new
+          dotnet test cgca.new/cgca.sln --configuration Release --logger "console;verbosity=minimal" > C:/deployment-stage/cgca-tests-${{ steps.buildid.outputs.formattedTime }}.md 
       - name: List all changed files
         run: |
-          Set-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "Commit Item Messages:"
+          Set-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "Test Results:"
+          Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value (Get-Content -Path C:/deployment-stage/cgca-tests-${{ steps.buildid.outputs.formattedTime }}.md)
+          Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "---------------------------------"
+          Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value ""
+          Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "Commit Item Messages:"
           Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "---------------------------------"
           Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value $(git log --format=%B -n 1 HEAD)
           Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value ""
@@ -47,6 +55,8 @@ jobs:
           Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "Changed Files"
           Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "---------------------------------"
           Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value $(git diff --name-status ORIG_HEAD..)
+          Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "---------------------------------"
+          Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value ""
       - name: Create Backup
         run: |
           New-Item -ItemType "directory" -Path "C:/deployment-stage/cgca/${{ steps.buildid.outputs.formattedTime }}/" -Force
