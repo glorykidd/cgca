@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cgca.web", "cgca.web\cgca.web.csproj", "{103D623A-9FAF-460B-AEB5-116F79C78DDB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cgca.web.Tests", "cgca.web.Tests\cgca.web.Tests.csproj", "{51B22D59-74AC-48C6-852F-7BC228B841F9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,18 @@ Global
 		{103D623A-9FAF-460B-AEB5-116F79C78DDB}.Release|x64.Build.0 = Release|Any CPU
 		{103D623A-9FAF-460B-AEB5-116F79C78DDB}.Release|x86.ActiveCfg = Release|Any CPU
 		{103D623A-9FAF-460B-AEB5-116F79C78DDB}.Release|x86.Build.0 = Release|Any CPU
+		{51B22D59-74AC-48C6-852F-7BC228B841F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51B22D59-74AC-48C6-852F-7BC228B841F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51B22D59-74AC-48C6-852F-7BC228B841F9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{51B22D59-74AC-48C6-852F-7BC228B841F9}.Debug|x64.Build.0 = Debug|Any CPU
+		{51B22D59-74AC-48C6-852F-7BC228B841F9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{51B22D59-74AC-48C6-852F-7BC228B841F9}.Debug|x86.Build.0 = Debug|Any CPU
+		{51B22D59-74AC-48C6-852F-7BC228B841F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51B22D59-74AC-48C6-852F-7BC228B841F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51B22D59-74AC-48C6-852F-7BC228B841F9}.Release|x64.ActiveCfg = Release|Any CPU
+		{51B22D59-74AC-48C6-852F-7BC228B841F9}.Release|x64.Build.0 = Release|Any CPU
+		{51B22D59-74AC-48C6-852F-7BC228B841F9}.Release|x86.ActiveCfg = Release|Any CPU
+		{51B22D59-74AC-48C6-852F-7BC228B841F9}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
