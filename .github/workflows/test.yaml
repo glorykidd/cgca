@@ -24,3 +24,4 @@ jobs:
           commit: true
           generateReleaseNotes: true
           name: "CGCA Release"
+          tag: "2026-02-18"
