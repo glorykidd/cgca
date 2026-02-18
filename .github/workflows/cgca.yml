@@ -39,7 +39,10 @@ jobs:
           dotnet test cgca.new/cgca.sln --configuration Release --logger "console;verbosity=minimal" > C:/deployment-stage/cgca-tests-${{ steps.buildid.outputs.formattedTime }}.md 
       - name: List all changed files
         run: |
-          Set-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "Test Results:"
+          Set-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value ""
+          Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "Publish Results for CGCA"
+          Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value ""
+          Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "Test Results:"
           Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value (Get-Content -Path C:/deployment-stage/cgca-tests-${{ steps.buildid.outputs.formattedTime }}.md)
           Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "---------------------------------"
           Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value ""
@@ -67,3 +70,7 @@ jobs:
           cd cgca.new/cgca.web
           dotnet build
           dotnet publish -c Release -o C:/www-root/cedargrovechristianacademy.org/     
+      - name: Email Notification 
+        run: |
+          cd  D:/it-tools/mailer 
+          ./SesMailer.exe --to dlnuckolls@gmail.com --subject "CGCA Release ${{ steps.buildid.outputs.formattedTime }}" --body C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt --format text
