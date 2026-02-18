@@ -21,6 +21,6 @@ jobs:
         with:
 #          artifacts: "release.tar.gz,foo/*.txt"
           bodyFile: "C:/deployment-stage/cgca-release.txt"
-          create: true
+          commit: true
           generateReleaseNotes: true
       
