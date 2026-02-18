@@ -24,19 +24,18 @@ jobs:
     name: Deploy CGCA Web
     runs-on: [ self-hosted ]
     steps:
-      - name: Checkout
+      - name: Checkout new code
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
-      - name: Generate Build Number
+      - name: Generate build number
         id: buildid
         uses: josStorer/get-current-time@v2.1.2
         with:
           utcOffset: "00:00"
           format: YYYY.MM.DD-HH.mm
-      - name: Run Tests
+      - name: Run tests for solution
         run: |
-          cd cgca.new
           dotnet test cgca.new/cgca.sln --configuration Release --logger "console;verbosity=minimal" > C:/deployment-stage/cgca-tests-${{ steps.buildid.outputs.formattedTime }}.md 
       - name: List all changed files
         run: |
@@ -57,13 +56,13 @@ jobs:
           Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value $(git diff --name-status ORIG_HEAD..)
           Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "---------------------------------"
           Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value ""
-      - name: Create Backup
+      - name: Create backup of current website
         run: |
           New-Item -ItemType "directory" -Path "C:/deployment-stage/cgca/${{ steps.buildid.outputs.formattedTime }}/" -Force
           Copy-Item C:/www-root/cedargrovechristianacademy.org/* -Destination C:/deployment-stage/cgca/${{ steps.buildid.outputs.formattedTime }}/ -Recurse
           Compress-Archive -Path "C:/deployment-stage/cgca/${{ steps.buildid.outputs.formattedTime }}/*" -Update -DestinationPath C:/backups/cgca-${{ steps.buildid.outputs.formattedTime }}.zip -CompressionLevel "Fastest"
           Remove-Item -Path C:/deployment-stage/cgca/${{ steps.buildid.outputs.formattedTime }} -Recurse
-      - name: Deploy New Code
+      - name: Deploy new code
         run: |
           cd cgca.new/cgca.web
           dotnet build
