@@ -121,21 +121,117 @@ code {
     text-align: start;
 }
 
-.card-title {
-    font-size: 2em !important;
-    /* Adjust this value as needed */
+/* --- CGCA custom properties --- */
+:root {
+    --cgca-gradient: linear-gradient(to bottom, rgb(0, 123, 255), rgb(0, 255, 187));
+    --cgca-primary-blue: #0441f7;
+    --cgca-accent-green: #06ce17b0;
+    --cgca-footer-bg: #333333;
+    --cgca-border-left-color: rgb(0, 79, 135);
 }
 
-.card-text {
-    font-size: 1.25em !important;
-    /* Adjust this value as needed */
+/* --- Card overrides --- */
+.card .card-title {
+    font-size: 2em;
+}
+
+.card .card-text {
+    font-size: 1.25em;
 }
 
 .card img {
-    padding-bottom: 10px !important;
-    height: 100px !important;
+    padding-bottom: 10px;
+    height: 100px;
 }
 
-.nav-item a {
-    font-size: 1.2em !important;
+.navbar .nav-item a {
+    font-size: 1.2em;
+}
+
+/* --- Reusable component classes --- */
+.section-header {
+    width: 100%;
+    text-align: center;
+    background-image: var(--cgca-gradient);
+    border-radius: 50px;
+    padding: 25px;
+    box-sizing: border-box;
+}
+
+.section-header-title {
+    font-size: 2em;
+    font-weight: bold;
+    margin-bottom: 0;
+}
+
+.section-header-subtitle {
+    font-size: 1.25em;
+    margin-bottom: 0;
+}
+
+.rounded-card {
+    border-radius: 25px;
+}
+
+.rounded-large {
+    border-radius: 50px;
+}
+
+.text-justify {
+    text-align: justify;
+}
+
+.text-center-full {
+    text-align: center;
+}
+
+.btn-rounded {
+    border-radius: 25px;
+}
+
+.modal-sidebar {
+    width: 100%;
+    text-align: left;
+    border-left: 6px solid var(--cgca-border-left-color);
+    margin-top: 15px;
+    border-radius: 25px;
+}
+
+.modal-sidebar-content {
+    padding-left: 20px;
+    font-size: 0.9em;
+}
+
+.modal-sidebar-content p {
+    text-indent: 25px;
+}
+
+.abc-list {
+    width: 80%;
+    text-align: left;
+    border-left: 6px solid rgb(2, 135, 0);
+    margin-top: 15px;
+    border-radius: 25px;
+}
+
+.abc-list p {
+    text-indent: 25px;
+    line-height: 1em;
+}
+
+.site-footer {
+    width: 100%;
+    text-align: center;
+    background-color: var(--cgca-footer-bg);
+    color: whitesmoke;
+    font-size: 0.7em;
+    padding: 1rem 0;
+}
+
+.embed-rounded {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 25px;
+    border: 0;
+    overflow: hidden;
 }
