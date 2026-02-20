@@ -1,14 +1,13 @@
-﻿@page "/about"
-@inject IJSRuntime JSRuntime
+@page "/about"
 
 <PageTitle>CGCA About</PageTitle>
 
 <div class="row">
   <div class="row">
     <div class="col-sm-12 col-md-6">
-      <div style="width: 100%; text-align: center;">
+      <div class="text-center-full">
         <Button Type="ButtonType.Link" Color="ButtonColor.Success" Target="Target.Blank" Size="ButtonSize.ExtraLarge"
-          style="border-radius: 25px;" To="https://app.praxischool.com/_remoteDonationPage.php?s=NDEwMV8xMDAx">
+          Class="btn-rounded" To="https://app.praxischool.com/_remoteDonationPage.php?s=NDEwMV8xMDAx">
           <Icon Name="IconName.CashStack" />
           &nbsp;&nbsp;Support CGCA&nbsp;&nbsp;
           <Icon Name="IconName.CashStack" />
@@ -16,9 +15,9 @@
       </div>
     </div>
     <div class="col-sm-12 col-md-6">
-      <div style="width: 100%; text-align: center;">
+      <div class="text-center-full">
         <Button Type="ButtonType.Link" Color="ButtonColor.Success" Target="Target.Blank" Size="ButtonSize.ExtraLarge"
-          style="border-radius: 25px;" To="https://forms.gle/VrTYwLTa7G6k8M9v9">
+          Class="btn-rounded" To="https://forms.gle/VrTYwLTa7G6k8M9v9">
           <Icon Name="IconName.Handbag" />
           &nbsp;&nbsp;CGCA Swag&nbsp;&nbsp;
           <Icon Name="IconName.Handbag" />
@@ -32,14 +31,14 @@
     </div>
   </div>
   <div class="col-sm-12 col-md-5">
-    <Image Src="images/higherlearning.jpg"></Image>
+    <img src="images/higherlearning.jpg" alt="Higher learning at CGCA" loading="lazy" class="img-fluid" />
   </div>
   <div class="col-sm-12 col-md-7">
     <Card TextAlignment="Alignment.Start" Style="border: 0px; padding-top: 75px;">
       <CardBody>
         <CardTitle><i>On A Mission...</i></CardTitle>
         <CardText>
-          <p style="text-align: justify;">Cedar Grove Christian Academy is a Christ-centered, mission-minded school.
+          <p class="text-justify">Cedar Grove Christian Academy is a Christ-centered, mission-minded school.
             Students have the privilege of serving our community through our missions program using Acts 1:8 as our
             guideline. Throughout the year, each class will go out and serve in their mission field (Jerusalem and
             Judea). Also, in their missions classes, they will learn about, pray for, communicate with, and contribute
@@ -58,28 +57,27 @@
   <div class="col-sm-12 col-md-6">
     <Card TextAlignment="Alignment.Center" Style="border: 0px;">
       <CardBody>
-        <Image Src="images/vision.png"></Image>
+        <img src="images/vision.png" alt="Vision" loading="lazy" style="height: 100px; padding-bottom: 10px;" />
         <CardTitle>Vision</CardTitle>
         <CardText>
-          <p style="text-align: justify;">Our goal is the development of students prepared academically and spiritually
+          <p class="text-justify">Our goal is the development of students prepared academically and spiritually
             to serve Jesus Christ and to impact the world through their character and leadership.</p>
         </CardText>
-        <Button Color="ButtonColor.Secondary" @onclick="OnShowModalVisionClick" style="border-radius: 20px;">Read Our
+        <Button Color="ButtonColor.Secondary" @onclick="@(() => ShowModalAsync(vision))" Class="btn-rounded">Read Our
           Vision</Button>
         <Modal @ref="vision" Title="VISION STATEMENT" Size="ModalSize.Large" IsVerticallyCentered="true">
           <BodyTemplate>
-            <div
-              style="width: 100%; text-align: left; border-left: 6px solid rgb(0, 79, 135); margin-top: 15px; border-radius: 25px;">
-              <div style="padding-left: 20px; font-size: .9em;">
-                <p style="text-indent: 25px;"><b>Our goal</b> is the development of students prepared academically and
+            <div class="modal-sidebar">
+              <div class="modal-sidebar-content">
+                <p><b>Our goal</b> is the development of students prepared academically and
                   spiritually to serve Jesus Christ and to impact the world through their character and leadership.</p>
-                <p style="text-indent: 25px;"><b>Rooted in Christ:</b> We believe that it is our mission to develop
+                <p><b>Rooted in Christ:</b> We believe that it is our mission to develop
                   students both academically and spiritually so that when they depart from Cedar Grove Christian Academy
                   they are firmly rooted in Christ. We, therefore, provide every student with an education that
                   overflows with Biblical truth in every subject; surrounding them with examples of servant-leaders, and
                   encouraging them to utilize their minds and actions to develop a worldview that is founded in faith.
                 </p>
-                <p style="text-indent: 25px;"><b>Ready for Tomorrow:</b> We believe that it is our goal to instill in
+                <p><b>Ready for Tomorrow:</b> We believe that it is our goal to instill in
                   each student the passion to serve the Lord Jesus Christ through their character and leadership. Cedar
                   Grove Christian Academy endeavors to prepare students to become Christ-like leaders in their schools,
                   churches, communities, families, and vocations. To learn more about our beliefs, please read our
@@ -88,7 +86,7 @@
             </div>
           </BodyTemplate>
           <FooterTemplate>
-            <Button Color="ButtonColor.Secondary" @onclick="OnHideModalVisionClick">Close</Button>
+            <Button Color="ButtonColor.Secondary" @onclick="@(() => HideModalAsync(vision))">Close</Button>
           </FooterTemplate>
         </Modal>
       </CardBody>
@@ -97,53 +95,52 @@
   <div class="col-sm-12 col-md-6">
     <Card TextAlignment="Alignment.Center" Style="border: 0px;">
       <CardBody>
-        <Image Src="images/philosophy.png"></Image>
+        <img src="images/philosophy.png" alt="Philosophy" loading="lazy" style="height: 100px; padding-bottom: 10px;" />
         <CardTitle>Philosophy</CardTitle>
         <CardText>
-          <p style="text-align: justify;">Since man was created in the image of God (Genesis 1:26-27), we are divine
+          <p class="text-justify">Since man was created in the image of God (Genesis 1:26-27), we are divine
             image bearers. As divine image bearers, we were created to glorify God, and to know Him.</p>
         </CardText>
-        <Button Color="ButtonColor.Secondary" @onclick="OnShowModalPhilosophyClick" style="border-radius: 20px;">Read
+        <Button Color="ButtonColor.Secondary" @onclick="@(() => ShowModalAsync(philosophy))" Class="btn-rounded">Read
           Our Philosophy of
           Education</Button>
         <Modal @ref="philosophy" Title="SCHOOL PHILOSOPHY" Size="ModalSize.Large" IsVerticallyCentered="true">
           <BodyTemplate>
-            <div
-              style="width: 100%; text-align: left; border-left: 6px solid rgb(0, 79, 135); margin-top: 15px; border-radius: 25px;">
-              <div style="padding-left: 20px; font-size: .9em;">
-                <p style="text-indent: 25px;">Since man was created in the image of God (Genesis 1:26-27), we are divine
+            <div class="modal-sidebar">
+              <div class="modal-sidebar-content">
+                <p>Since man was created in the image of God (Genesis 1:26-27), we are divine
                   image bearers. As
                   divine image bearers, we were created to glorify God, and to know Him It is imperative that
-                  Christian education’s loftiest goal is to educate its students in the knowledge of that God whose
-                  image they bear, and to make it the highest science that engages the student’s mind.
+                  Christian education's loftiest goal is to educate its students in the knowledge of that God whose
+                  image they bear, and to make it the highest science that engages the student's mind.
                   The knowledge of God is the best and highest form of knowledge that has its beginning in the
                   fear of God (Proverbs 1:7) A proper fear of God leads man to wonder and marvel at the mystery
                   of the Godhead; to pursue and understand the complex nature of His creation; to develop abilities
                   to think carefully and critically about the issues of life and death; to understand how the
                   knowledge of God leads to scientific discoveries as every aspect of creation is investigated.</p>
-                <p style="text-indent: 25px;">“The fear of the Lord is the beginning of wisdom, and the knowledge of the
+                <p>"The fear of the Lord is the beginning of wisdom, and the knowledge of the
                   Holy One is
-                  understanding” (Proverbs 9:10). The knowledge of the Holy One is the fertile ground in which
+                  understanding" (Proverbs 9:10). The knowledge of the Holy One is the fertile ground in which
                   wisdom grows, therefore it is essential that the Christian education of children include the Holy
                   Scriptures, which are the bone and marrow of our knowledge of God, and are able to make
-                  children “wise for salvation” (2 Timothy 4:15). “The heart of the prudent acquires knowledge
-                  and the ear of the wise seeks knowledge” (Proverbs 18:15).</p>
-                <p style="text-indent: 25px;">There can be no knowledge or wisdom apart from truth, thus Christian
+                  children "wise for salvation" (2 Timothy 4:15). "The heart of the prudent acquires knowledge
+                  and the ear of the wise seeks knowledge" (Proverbs 18:15).</p>
+                <p>There can be no knowledge or wisdom apart from truth, thus Christian
                   education must exhaust
                   every means to discover and know the truth. Truth finds its Alpha and Omega, its beginning and
                   its end in Jesus Christ, whose very name is Truth (John 14:6; Revelation 19:11). As Jesus is the
-                  one true God, who “is the same yesterday, today, and forever” (Hebrews 13:8), and “with whom
-                  there is no variation or shadow of turning” (James 1:17); therefore truth, all truth, is absolute and
+                  one true God, who "is the same yesterday, today, and forever" (Hebrews 13:8), and "with whom
+                  there is no variation or shadow of turning" (James 1:17); therefore truth, all truth, is absolute and
                   not relative and rests on the unchanging standards of the word of God.</p>
-                <p style="text-indent: 25px;">Therefore, education should first and foremost be the pursuit of knowing
+                <p>Therefore, education should first and foremost be the pursuit of knowing
                   God our creator. We
-                  seek to educate all students from the basis of God’s revealed truth in the Bible. The primary
+                  seek to educate all students from the basis of God's revealed truth in the Bible. The primary
                   place for this education is the home. The church also plays an essential role in the pursuit of true
                   knowledge and wisdom. The school comes alongside the home and the church and supports and
                   aids in the education process. The school can not take the place of home and church, and should
                   never promote or teach ideas contrary to, or challenging the truth of God being taught in the
                   home and in the church.</p>
-                <p style="text-indent: 25px;">The purpose of Christian education, then, is to discover the sublime
+                <p>The purpose of Christian education, then, is to discover the sublime
                   realities of God as He has
                   revealed Himself in the Scripture and in nature. It must be the goal of Christian education to
                   instruct our children about the true nature of the Triune God, and how that knowledge affects and
@@ -152,7 +149,7 @@
             </div>
           </BodyTemplate>
           <FooterTemplate>
-            <Button Color="ButtonColor.Secondary" @onclick="OnHideModalPhilosophyClick">Close</Button>
+            <Button Color="ButtonColor.Secondary" @onclick="@(() => HideModalAsync(philosophy))">Close</Button>
           </FooterTemplate>
         </Modal>
       </CardBody>
@@ -166,95 +163,94 @@
   <div class="col-sm-12 col-md-6">
     <Card TextAlignment="Alignment.Center" Style="border: 0px;">
       <CardBody>
-        <Image Src="images/statement.png"></Image>
+        <img src="images/statement.png" alt="Statement of Faith" loading="lazy" style="height: 100px; padding-bottom: 10px;" />
         <CardTitle>Statement of Faith</CardTitle>
         <CardText>
-          <p style="text-align: justify;"><b><i>We believe</i></b> in the one true God (Deuteronomy 6:4), manifest in
+          <p class="text-justify"><b><i>We believe</i></b> in the one true God (Deuteronomy 6:4), manifest in
             three distinct persons: Father, Son, and Holy Spirit (Matthew 28:19). </p>
         </CardText>
-        <Button Color="ButtonColor.Secondary" @onclick="OnShowModalStatementClick" style="border-radius: 20px;">Read Our
+        <Button Color="ButtonColor.Secondary" @onclick="@(() => ShowModalAsync(faith))" Class="btn-rounded">Read Our
           Statement of Faith</Button>
         <Modal @ref="faith" Title="STATEMENT of FAITH" Size="ModalSize.Large" IsVerticallyCentered="true">
           <BodyTemplate>
-            <div
-              style="width: 100%; text-align: left; border-left: 6px solid rgb(0, 79, 135); margin-top: 15px; border-radius: 25px;">
-              <div style="padding-left: 20px; font-size: .9em;">
-                <p style="text-indent: 25px;">We believe in the one true God (Deuteronomy 6:4), manifest in three
+            <div class="modal-sidebar">
+              <div class="modal-sidebar-content">
+                <p>We believe in the one true God (Deuteronomy 6:4), manifest in three
                   distinct persons: Father,
                   Son, and Holy Spirit (Matthew 28:19).</p>
-                <p style="text-indent: 25px;">We believe that it is the purpose of the Father to have a people for His
+                <p>We believe that it is the purpose of the Father to have a people for His
                   name, and that He has set
                   His love on His people from eternity (Ephesians 1:2- 11); that the Son of God, Jesus Christ, died
                   to accomplish the salvation purposed by the Father, that He rose from the dead after three days in
                   the grave and ascended to heaven where He is seated at the right hand of God (Matthew 1:21;
                   John 10:14-30; John 3:16; 1 Timothy 1:15; Luke 19:10; Matthew 28:5-6; Acts 1:9-11; Hebrews
                   1:3), and that He is fully God and fully Man (John 1:1-18); that the Holy Spirit is the Divine
-                  energy, also fully God, proceeding from the Father and the Son and the Author of the “new birth”
-                  to affectively (moving the “new” heart) and effectively (engaging the “new” will) appropriating
+                  energy, also fully God, proceeding from the Father and the Son and the Author of the "new birth"
+                  to affectively (moving the "new" heart) and effectively (engaging the "new" will) appropriating
                   the death of the Son of God to the salvation of sinners (John 3:3-8; Titus 3:5), and that the work
                   of the Holy Spirit is to testify of the Lord Jesus Christ (John 14:26; 15:26), and that He (the Holy
-                  Ghost) “when He is come will reprove the world of sin, and of righteousness, and of judgment”
+                  Ghost) "when He is come will reprove the world of sin, and of righteousness, and of judgment"
                   (John 16:8).</p>
-                <p style="text-indent: 25px;">We believe that God created man in His own image (Genesis 1:26); that man
+                <p>We believe that God created man in His own image (Genesis 1:26); that man
                   fell into gross and
                   wicked sin (Genesis 3:1-24); that Adam is our first parent and the Representative Head of fallen
-                  man (Romans 5:12-19), whereby the nature communicated to Adam’s posterity is a fallen nature,
+                  man (Romans 5:12-19), whereby the nature communicated to Adam's posterity is a fallen nature,
                   so that every person born after the fall of Adam is born a sinner and a stranger to the grace of
                   God and is condemned already (John 3:17-18).</p>
-                <p style="text-indent: 25px;">We believe that people cannot be saved apart from repentance and faith;
+                <p>We believe that people cannot be saved apart from repentance and faith;
                   both repentance and
                   faith are the gracious gifts of God to lost sinners (Acts 20:21).</p>
-                <p style="text-indent: 25px;">We believe that the Bible is the infallible, inerrant, verbally inspired
+                <p>We believe that the Bible is the infallible, inerrant, verbally inspired
                   Word of God, written by
                   holy men of old as they were moved by God (2 Peter 1:20-21; 2 Timothy 3:15-17).</p>
-                <p style="text-indent: 25px;">We believe that the Church is a called-out body of believers that is both
+                <p>We believe that the Church is a called-out body of believers that is both
                   local and universal:
                   local in that believers are called out in particular regions and unite for worship (Romans 1:7; 1
-                  Corinthians 1:2; Galatians 1:2); universal in that they are redeemed from every “kindred, and
-                  tongue, and people, and nation” (Revelation 7:9).</p>
-                <p style="text-indent: 25px;">We believe that the return of Jesus Christ is imminent (1 Thessalonians
+                  Corinthians 1:2; Galatians 1:2); universal in that they are redeemed from every "kindred, and
+                  tongue, and people, and nation" (Revelation 7:9).</p>
+                <p>We believe that the return of Jesus Christ is imminent (1 Thessalonians
                   4:15-17).</p>
-                <p style="text-indent: 25px;">We believe that people are saved by the “foolishness of preaching” (1
+                <p>We believe that people are saved by the "foolishness of preaching" (1
                   Corinthians 1:18), and that
-                  ministers must preach ”Jesus Christ and Him crucified” (1 Corinthians 2:2).</p>
-                <p style="text-indent: 25px;">We believe God establishes and defines the marriage covenant in His Word
+                  ministers must preach "Jesus Christ and Him crucified" (1 Corinthians 2:2).</p>
+                <p>We believe God establishes and defines the marriage covenant in His Word
                   and the Bible teaches
                   us that marriage is between one man and one woman. (Genesis 2:24) People or governments do
                   not have the authority to change the biblical definition of marriage. God does not acknowledge
                   any other definition of marriage.</p>
-                <p style="text-indent: 25px;">We believe the Bible teaches there is only one race, the human race, and
+                <p>We believe the Bible teaches there is only one race, the human race, and
                   that all people are blood
                   relatives descended from Adam and Eve. Hating other people because they look, act, speak, or
                   have different cultural or personal preferences than you do, or for any other reason, is the core
-                  sin of failing to obey the second great commandment, “to love your neighbor as yourself.” (Mark
+                  sin of failing to obey the second great commandment, "to love your neighbor as yourself." (Mark
                   12:31)</p>
-                <p style="text-indent: 25px;">We believe that all human life is sacred beginning at the moment of
+                <p>We believe that all human life is sacred beginning at the moment of
                   conception and ending at a
-                  person’s natural death. (Psalm 139:13-16) Accordingly, every unborn child is a living human
+                  person's natural death. (Psalm 139:13-16) Accordingly, every unborn child is a living human
                   being, created in the image of God, and must be respected and protected both before and after
                   birth. Direct or indirect volitional taking of any innocent human life by any means and by any
                   individual or entity through abortion or euthanasia constitutes a violation of the sanctity of
                   human life and is a sin against God and a crime against man.</p>
-                <p style="text-indent: 25px;">We believe that God acts to give each person a gender by wonderfully and
+                <p>We believe that God acts to give each person a gender by wonderfully and
                   immutably creating
                   each person as distinctly male or female. (Psalm 139:13-16, Deuteronomy 22:5) These two
                   distinct, complementary genders together reflect the image and nature of God. Rejection,
-                  whether by personal volition or compulsion, of one’s biological gender is a rejection of the image
+                  whether by personal volition or compulsion, of one's biological gender is a rejection of the image
                   of God within that person and a sin against God.</p>
-                <p style="text-indent: 25px;">We believe that God intends sexual intimacy to occur only between a man
+                <p>We believe that God intends sexual intimacy to occur only between a man
                   and a woman who are
                   married to each other. God has commanded that no intimate sexual activity be engaged in outside
                   of a marriage between a man and a woman. (Hebrews 13:4) Condoning, engaging in, or
                   facilitating of any form of sexual intimacy outside of marriage is sexually immoral, sinful, and
                   offensive to God. Any form of sexual immorality is sinful and offensive to God. (Jude 1:7)
                   Sexual immorality includes but is not limited to adultery, fornication, homosexuality, lesbianism,
-                  bisexual conduct, bestiality, incest, pornography, and attempting to change one’s biological sex
-                  or otherwise acting upon any disagreement with one’s biological sex. (1 Corinthians 6:12-20)</p>
-                <p style="text-indent: 25px;">We believe that in order to preserve the function and integrity of the
+                  bisexual conduct, bestiality, incest, pornography, and attempting to change one's biological sex
+                  or otherwise acting upon any disagreement with one's biological sex. (1 Corinthians 6:12-20)</p>
+                <p>We believe that in order to preserve the function and integrity of the
                   Cedar Grove Christian
                   Academy, to commit to traditional education in a Christ-centered environment, to act as a faithful
                   and local component of the Body of Christ, and to provide Biblical instruction and modeling to
-                  the Academy’s students, faculty, staff, families, and the community, it is imperative that all
+                  the Academy's students, faculty, staff, families, and the community, it is imperative that all
                   persons employed by Cedar Grove Christian Academy in any capacity, who serve as volunteers,
                   or independent contractors, should abide by and agree to our Statement of Faith and conduct
                   themselves accordingly. (1 Corinthians 1:10)</p>
@@ -262,7 +258,7 @@
             </div>
           </BodyTemplate>
           <FooterTemplate>
-            <Button Color="ButtonColor.Secondary" @onclick="OnHideModalStatementClick">Close</Button>
+            <Button Color="ButtonColor.Secondary" @onclick="@(() => HideModalAsync(faith))">Close</Button>
           </FooterTemplate>
         </Modal>
       </CardBody>
@@ -271,53 +267,52 @@
   <div class="col-sm-12 col-md-6">
     <Card TextAlignment="Alignment.Center" Style="border: 0px;">
       <CardBody>
-        <Image Src="images/standards.png"></Image>
+        <img src="images/standards.png" alt="Code of Conduct" loading="lazy" style="height: 100px; padding-bottom: 10px;" />
         <CardTitle>Conduct</CardTitle>
         <CardText>
-          <p style="text-align: justify;">All constituents of the CGCA community are expected to manifest the highest
+          <p class="text-justify">All constituents of the CGCA community are expected to manifest the highest
             Christian virtues in judgment, dignity, respect, and living as long as they are associated with CGCA.</p>
         </CardText>
-        <Button Color="ButtonColor.Secondary" @onclick="OnShowModalConductClick" style="border-radius: 20px;">Read Our
+        <Button Color="ButtonColor.Secondary" @onclick="@(() => ShowModalAsync(conduct))" Class="btn-rounded">Read Our
           Code of Conduct</Button>
         <Modal @ref="conduct" Title="CODE of CONDUCT" Size="ModalSize.Large" IsVerticallyCentered="true">
           <BodyTemplate>
-            <div
-              style="width: 100%; text-align: left; border-left: 6px solid rgb(0, 79, 135); margin-top: 15px; border-radius: 25px;">
-              <div style="padding-left: 20px; font-size: .9em;">
-                <p style="text-indent: 25px; font-weight: bold;">Conduct as Christians</p>
-                <p style="text-indent: 25px;">All constituents of the Cedar Grove Christian Academy community (students,
+            <div class="modal-sidebar">
+              <div class="modal-sidebar-content">
+                <p style="font-weight: bold;">Conduct as Christians</p>
+                <p>All constituents of the Cedar Grove Christian Academy community (students,
                   staff, volunteers,
                   parents, etc.) are expected to manifest the highest Christian virtues in judgment, dignity, respect,
                   and living as long as they are associated with the academy. Our expectations are grounded in our
                   statements of faith, mission, and philosophy.</p>
-                <p style="text-indent: 25px;">Students, volunteers, visitors, and staff are expected to dress modestly
+                <p>Students, volunteers, visitors, and staff are expected to dress modestly
                   and in conformance with
-                  one’s biological sex.</p>
-                <p style="text-indent: 25px;">Students and staff are expected to avoid cheating, stealing and lying.</p>
-                <p style="text-indent: 25px;">They are to respect the authority of teachers, administrators, and other
+                  one's biological sex.</p>
+                <p>Students and staff are expected to avoid cheating, stealing and lying.</p>
+                <p>They are to respect the authority of teachers, administrators, and other
                   staff members. Students
                   will consider the lives of their classmates to be valuable and worthy of their respect (Philippians
                   2:3). The staff will consider students, parents, and colleagues to be worthy of their respect. They
                   are also expected to respect school property and take good care of the facilities and equipment
                   that they are provided (1 Peter 2:17).</p>
-                <p style="text-indent: 25px;">The failure to comply with the expected standards of conduct will subject
+                <p>The failure to comply with the expected standards of conduct will subject
                   the student to
                   disciplinary action up to expulsion, and the staff member disciplinary action up to termination.
                   Others are subject to banishment from the campus.</p>
-                <p style="text-indent: 25px; font-weight: bold;">Conduct toward Authority</p>
-                <p style="text-indent: 25px;">Romans 13:1-5 instructs us to subject ourselves to authority. The matter
+                <p style="font-weight: bold;">Conduct toward Authority</p>
+                <p>Romans 13:1-5 instructs us to subject ourselves to authority. The matter
                   of respect for teachers
                   and administration is given the utmost importance at Cedar Grove Christian Academy. We are
                   not above making mistakes, but everyone deserves to be treated with respect and courtesy (1
                   Corinthians 14:40; Philippians 2:3; Romans 12:10). Therefore, any student or parent who directs
                   profanity, name calling, derogatory comments, or any other verbal or physical assault toward a
-                  staff member in person, in writing, by email, or social media may forfeit the student’s continued
+                  staff member in person, in writing, by email, or social media may forfeit the student's continued
                   attendance at Cedar Grove Christian Academy.</p>
               </div>
             </div>
           </BodyTemplate>
           <FooterTemplate>
-            <Button Color="ButtonColor.Secondary" @onclick="OnHideModalConductClick">Close</Button>
+            <Button Color="ButtonColor.Secondary" @onclick="@(() => HideModalAsync(conduct))">Close</Button>
           </FooterTemplate>
         </Modal>
       </CardBody>
@@ -329,10 +324,9 @@
 </div>
 <div class="row">
   <div class="col-12">
-    <div
-      style="width:100%; text-align: center; background-image: linear-gradient(to bottom, rgb(0, 123, 255), rgb(0, 255, 187)); border-bottom-left-radius: 50px; border-bottom-right-radius: 50px;  border-top-left-radius: 50px; border-top-right-radius: 50px; padding: 25px;">
-      <p style="font-size: 2em; font-weight: bold;"> Education and Learning </p>
-      <p style="font-size: 1.25em;"> Learning is something we do every day </p>
+    <div class="section-header">
+      <p class="section-header-title"> Education and Learning </p>
+      <p class="section-header-subtitle"> Learning is something we do every day </p>
     </div>
   </div>
 </div>
@@ -345,42 +339,11 @@
 </div>
 
 @code {
-  private Modal vision = default!;
-  private Modal philosophy = default!;
-  private Modal faith = default!;
-  private Modal conduct = default!;
+  private Modal vision = null!;
+  private Modal philosophy = null!;
+  private Modal faith = null!;
+  private Modal conduct = null!;
 
-  private async Task OnShowModalVisionClick()
-  {
-    await vision.ShowAsync();
-  }
-  private async Task OnHideModalVisionClick()
-  {
-    await vision.HideAsync();
-  }
-  private async Task OnShowModalPhilosophyClick()
-  {
-    await philosophy.ShowAsync();
-  }
-  private async Task OnHideModalPhilosophyClick()
-  {
-    await philosophy.HideAsync();
-  }
-  private async Task OnShowModalStatementClick()
-  {
-    await faith.ShowAsync();
-  }
-  private async Task OnHideModalStatementClick()
-  {
-    await faith.HideAsync();
-  }
-  private async Task OnShowModalConductClick()
-  {
-    await conduct.ShowAsync();
-  }
-  private async Task OnHideModalConductClick()
-  {
-    await conduct.HideAsync();
-  }
-
+  private async Task ShowModalAsync(Modal modal) => await modal.ShowAsync();
+  private async Task HideModalAsync(Modal modal) => await modal.HideAsync();
 }
