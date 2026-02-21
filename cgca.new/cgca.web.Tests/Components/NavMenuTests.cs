@@ -86,7 +86,7 @@ public class NavMenuTests : BunitContext
         var cut = Render<NavMenu>();
 
         // Assert - External links should open in new tab
-        var registerLink = cut.Find("a[href='https://tinyurl.com/25c6vtks']");
+        var registerLink = cut.Find("a[href='https://app.praxischool.com/site_login.php?s=4101']");
         registerLink.GetAttribute("target").Should().Be("_blank", "Register Now link should open in new tab");
 
         var schoolBoardLink = cut.Find("a[href='https://forms.gle/X4Go6u1iYqaH6WGg8']");
