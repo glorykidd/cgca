@@ -1,9 +1,8 @@
-﻿@page "/"
-@inject IJSRuntime JSRuntime
+@page "/"
 <PageTitle>Home</PageTitle>
 <div class="row">
-  <div class="col-12" style="text-align: center;">
-    <Alert Color="AlertColor.Success" style="text-align: left; border-radius: 25px;">
+  <div class="col-12 text-center">
+    <Alert Color="AlertColor.Success" style="text-align: justify; border-radius: 25px;">
       <Icon Name="IconName.CheckCircleFill" class="me-2"></Icon>
       <strong>Registration now open for the 2026/27 school year!</strong>
       <br />
@@ -19,7 +18,7 @@
         <CardText>
           <blockquote>
             <i>We seek to educate students using all the academic disciplines, and to engage students in the
-              pursuit of God’s truth in all spheres of life.</i>
+              pursuit of God's truth in all spheres of life.</i>
           </blockquote>
         </CardText>
         <a href="/about" class="text-decoration-none">
@@ -28,8 +27,8 @@
         </a>
       </CardBody>
     </Card>
-    <div style="width: 100%; text-align: center; margin-top: 20px;">
-      <Button Type="ButtonType.Link" Color="ButtonColor.Success" Target="Target.Blank" Size="ButtonSize.ExtraLarge" style="border-radius: 25px;" To="https://app.praxischool.com/site_login.php?s=4101">
+    <div class="text-center-full" style="margin-top: 20px;">
+      <Button Type="ButtonType.Link" Color="ButtonColor.Success" Target="Target.Blank" Size="ButtonSize.ExtraLarge" Class="btn-rounded" To="https://app.praxischool.com/site_login.php?s=4101">
         <Icon Name="IconName.Alarm" />
         &nbsp;&nbsp;Register Now&nbsp;&nbsp;
         <Icon Name="IconName.Alarm" />
@@ -37,7 +36,10 @@
     </div>
   </div>
   <div class="col-sm-12 col-md-7">
-    <iframe style="width: 100%; height: 425px; border-radius: 25px;" class="embed-responsive-item" src="https://embed.sermonaudio.com/player/v/32624147123685/" allowfullscreen></iframe>
+    <iframe class="embed-rounded embed-responsive-item" style="height: 425px;"
+      src="https://embed.sermonaudio.com/player/v/32624147123685/"
+      title="Cedar Grove Christian Academy sermon audio player"
+      allowfullscreen></iframe>
   </div>
 </div>
 <div class="row">
@@ -45,8 +47,8 @@
 </div>
 <div class="row">
   <div class="col-12">
-    <div style="width:100%; text-align: center; background-image: linear-gradient(to bottom, rgb(0, 123, 255), rgb(0, 255, 187)); border-bottom-left-radius: 50px; border-bottom-right-radius: 50px;  border-top-left-radius: 50px; border-top-right-radius: 50px;">
-      <p style="font-size: 2em; line-height: 4em; font-weight: bold;">- Who We Are -</p>
+    <div class="section-header">
+      <p class="section-header-title">- Who We Are -</p>
     </div>
   </div>
 </div>
@@ -57,10 +59,10 @@
   <div class="col-sm-12 col-md-6">
     <Card TextAlignment="Alignment.Center" Style="border: 0px;">
       <CardBody>
-        <Image Src="images/ourmission.png"></Image>
+        <img src="images/ourmission.png" alt="Our Mission" loading="lazy" style="height: 100px; padding-bottom: 10px;" />
         <CardTitle>Our Mission</CardTitle>
         <CardText>
-          <p style="text-align: justify;">Cedar Grove Christian Academy exists to faithfully proclaim the gospel of
+          <p class="text-justify">Cedar Grove Christian Academy exists to faithfully proclaim the gospel of
             Jesus Christ to a lost and dying
             world, to equip and train students to think and live Biblically, and to prepare the next generation of
             Christian leaders.</p>
@@ -71,15 +73,15 @@
   <div class="col-sm-12 col-md-6">
     <Card TextAlignment="Alignment.Center" Style="border: 0px;">
       <CardBody>
-        <Image Src="images/corevalues.png"></Image>
+        <img src="images/corevalues.png" alt="Core Values" loading="lazy" style="height: 100px; padding-bottom: 10px;" />
         <CardTitle>Core Values</CardTitle>
         <CardText>
-          <p style="text-align: justify;">We are committed to delivering the ABC's necessary for our students to
+          <p class="text-justify">We are committed to delivering the ABC's necessary for our students to
             succeed:</p>
-          <div style="width: 80%; text-align: left; border-left: 6px solid rgb(2, 135, 0); margin-top: 15px; border-radius: 25px;">
-            <p style=" text-indent: 25px; line-height: 1em;">A - Academic Rigor</p>
-            <p style=" text-indent: 25px; line-height: 1em;">B - Biblical World-view</p>
-            <p style=" text-indent: 25px; line-height: 1em;">C - Christ centered</p>
+          <div class="abc-list">
+            <p>A - Academic Rigor</p>
+            <p>B - Biblical World-view</p>
+            <p>C - Christ centered</p>
           </div>
         </CardText>
       </CardBody>
@@ -93,10 +95,10 @@
   <div class="col-12">
     <Card TextAlignment="Alignment.Center" Style="border: 0px;">
       <CardBody>
-        <Image Src="images/discrimination.png"></Image>
+        <img src="images/discrimination.png" alt="Our Students" loading="lazy" style="height: 100px; padding-bottom: 10px;" />
         <CardTitle>Our Students</CardTitle>
         <CardText>
-          <p style="text-align: justify;">Cedar Grove Christian Academy admits students of any race, color, and national
+          <p class="text-justify">Cedar Grove Christian Academy admits students of any race, color, and national
             or ethnic origin to all the
             rights, privileges, programs, and activities generally accorded or made available to students at the school.
             It does not discriminate on the basis of race, color, or national or ethnic origin in the administration of
