@@ -3,7 +3,7 @@
 @inject IChatService ChatService
 
 <!-- Floating chat toggle button -->
-<button class="chat-toggle-btn" @onclick="ToggleChat" aria-label="@(isOpen ? "Close chat" : "Open chat assistant")">
+<button class="chat-toggle-btn" @onclick="ToggleChat" aria-label="@(isOpen ? "Close chat" : "Chat with Gracie")">
     @if (isOpen)
     {
         <span class="chat-toggle-icon">&times;</span>
@@ -18,11 +18,11 @@
 
 @if (isOpen)
 {
-    <div class="chat-panel" role="dialog" aria-label="CGCA Chat Assistant" @onkeydown="HandleKeyDown">
+    <div class="chat-panel" role="dialog" aria-label="Chat with Gracie" @onkeydown="HandleKeyDown">
         <!-- Header -->
         <div class="chat-header">
             <div class="chat-header-title">
-                <strong>CGCA Assistant</strong>
+                <strong>Gracie</strong>
                 <span class="chat-header-subtitle">We're here to help!</span>
             </div>
             <button class="chat-close-btn" @onclick="ToggleChat" aria-label="Close chat">&times;</button>
@@ -32,7 +32,7 @@
         <div class="chat-messages" @ref="messagesContainer">
             <!-- Welcome message -->
             <div class="chat-bubble assistant">
-                Hi! I'm the CGCA assistant. I can help with admissions, school info, and more. How can I help you today?
+                Hi! I'm Gracie, your Cedar Grove Christian Academy helper. I can answer questions about admissions, tuition, school hours, and more. How can I help you today?
             </div>
 
             @foreach (var msg in messages)
@@ -176,7 +176,7 @@
         }
         catch
         {
-            errorMessage = "Sorry, I'm having trouble right now. Please contact us directly at contactus@cedargrovechristianacademy.org.";
+            errorMessage = "Sorry, I'm having trouble right now. Please contact us directly at (502) 543-4101 or contactus@cedargrovechristianacademy.org.";
         }
         finally
         {
