@@ -1,6 +1,7 @@
 using Bunit;
 using cgca.web;
 using cgca.web.Pages;
+using cgca.web.Services;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -17,6 +18,7 @@ public class RoutingTests : BunitContext
     {
         // Setup required services for routing tests
         Services.AddBlazorBootstrap();
+        Services.AddSingleton<IChatService, StubChatService>();
 
         // Mock JS Interop calls for Blazor Bootstrap
         JSInterop.Mode = JSRuntimeMode.Loose;

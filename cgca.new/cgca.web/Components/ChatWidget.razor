@@ -1,0 +1,216 @@
+@using cgca.web.Models
+@using cgca.web.Services
+@inject IChatService ChatService
+
+<!-- Floating chat toggle button -->
+<button class="chat-toggle-btn" @onclick="ToggleChat" aria-label="@(isOpen ? "Close chat" : "Open chat assistant")">
+    @if (isOpen)
+    {
+        <span class="chat-toggle-icon">&times;</span>
+    }
+    else
+    {
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+    }
+</button>
+
+@if (isOpen)
+{
+    <div class="chat-panel" role="dialog" aria-label="CGCA Chat Assistant" @onkeydown="HandleKeyDown">
+        <!-- Header -->
+        <div class="chat-header">
+            <div class="chat-header-title">
+                <strong>CGCA Assistant</strong>
+                <span class="chat-header-subtitle">We're here to help!</span>
+            </div>
+            <button class="chat-close-btn" @onclick="ToggleChat" aria-label="Close chat">&times;</button>
+        </div>
+
+        <!-- Message thread -->
+        <div class="chat-messages" @ref="messagesContainer">
+            <!-- Welcome message -->
+            <div class="chat-bubble assistant">
+                Hi! I'm the CGCA assistant. I can help with admissions, school info, and more. How can I help you today?
+            </div>
+
+            @foreach (var msg in messages)
+            {
+                <div class="chat-bubble @msg.Role">
+                    @msg.Content
+                </div>
+            }
+
+            @if (isLoading)
+            {
+                <div class="chat-bubble assistant typing">
+                    <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                </div>
+            }
+
+            @if (showLeadForm && !leadCaptured)
+            {
+                <div class="chat-bubble assistant lead-form">
+                    <p>Would you like someone from our admissions team to follow up with you?</p>
+                    <div class="lead-form-fields">
+                        <input type="text" class="lead-input" placeholder="Your name" @bind="leadName" aria-label="Your name" />
+                        <input type="email" class="lead-input" placeholder="Your email" @bind="leadEmail" aria-label="Your email" />
+                        <button class="lead-submit-btn" @onclick="SubmitLead" disabled="@(string.IsNullOrWhiteSpace(leadName) || string.IsNullOrWhiteSpace(leadEmail))">
+                            Send Info
+                        </button>
+                    </div>
+                </div>
+            }
+
+            @if (leadCaptured)
+            {
+                <div class="chat-bubble assistant">
+                    Thanks! Someone from our admissions team will be in touch shortly.
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="chat-bubble assistant error">
+                    @errorMessage
+                </div>
+            }
+        </div>
+
+        <!-- Input area -->
+        <div class="chat-input-area">
+            <input type="text"
+                   class="chat-input"
+                   placeholder="Type a message..."
+                   @bind="currentInput"
+                   @bind:event="oninput"
+                   @onkeydown="HandleInputKeyDown"
+                   disabled="@(isLoading || sessionCapped)"
+                   aria-label="Chat message input" />
+            <button class="chat-send-btn"
+                    @onclick="SendMessage"
+                    disabled="@(isLoading || string.IsNullOrWhiteSpace(currentInput) || sessionCapped)"
+                    aria-label="Send message">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+}
+
+@code {
+    private bool isOpen;
+    private bool isLoading;
+    private bool showLeadForm;
+    private bool leadCaptured;
+    private bool sessionCapped;
+    private string currentInput = string.Empty;
+    private string? errorMessage;
+    private string leadName = string.Empty;
+    private string leadEmail = string.Empty;
+    private int userMessageCount;
+    private string sessionId = Guid.NewGuid().ToString();
+    private List<ChatMessage> messages = new();
+    private ElementReference messagesContainer;
+
+    private void ToggleChat()
+    {
+        isOpen = !isOpen;
+        errorMessage = null;
+    }
+
+    private void HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Escape")
+        {
+            isOpen = false;
+        }
+    }
+
+    private async Task HandleInputKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter" && !isLoading && !string.IsNullOrWhiteSpace(currentInput))
+        {
+            await SendMessage();
+        }
+    }
+
+    private async Task SendMessage()
+    {
+        if (string.IsNullOrWhiteSpace(currentInput) || isLoading || sessionCapped)
+            return;
+
+        var userText = currentInput.Trim();
+        currentInput = string.Empty;
+        errorMessage = null;
+
+        messages.Add(new ChatMessage { Role = "user", Content = userText });
+        userMessageCount++;
+        isLoading = true;
+        StateHasChanged();
+
+        try
+        {
+            var request = new ChatRequest
+            {
+                SessionId = sessionId,
+                Messages = messages.ToList()
+            };
+
+            var response = await ChatService.SendMessageAsync(request);
+            messages.Add(new ChatMessage { Role = "assistant", Content = response.Reply });
+
+            // Detect session cap message from the server
+            if (response.Reply.Contains("reached the limit for this chat session", StringComparison.OrdinalIgnoreCase))
+            {
+                sessionCapped = true;
+            }
+
+            // Show lead capture form after the user's 2nd message
+            if (userMessageCount >= 2 && !leadCaptured && !showLeadForm)
+            {
+                showLeadForm = true;
+            }
+        }
+        catch
+        {
+            errorMessage = "Sorry, I'm having trouble right now. Please contact us directly at contactus@cedargrovechristianacademy.org.";
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task SubmitLead()
+    {
+        if (string.IsNullOrWhiteSpace(leadName) || string.IsNullOrWhiteSpace(leadEmail))
+            return;
+
+        try
+        {
+            var lead = new LeadRequest
+            {
+                Name = leadName.Trim(),
+                Email = leadEmail.Trim(),
+                SessionId = sessionId,
+                Timestamp = DateTime.UtcNow.ToString("o")
+            };
+
+            await ChatService.SubmitLeadAsync(lead);
+            leadCaptured = true;
+            showLeadForm = false;
+        }
+        catch
+        {
+            // Silently fail — don't disrupt the chat for a lead capture failure
+            leadCaptured = true;
+            showLeadForm = false;
+        }
+
+        StateHasChanged();
+    }
+}

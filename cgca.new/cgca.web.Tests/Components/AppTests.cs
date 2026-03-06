@@ -1,5 +1,6 @@
 using Bunit;
 using cgca.web;
+using cgca.web.Services;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -15,6 +16,7 @@ public class AppTests : BunitContext
     {
         // Setup required services
         Services.AddBlazorBootstrap();
+        Services.AddSingleton<IChatService, StubChatService>();
 
         // Mock JS Interop calls for Blazor Bootstrap
         JSInterop.Mode = JSRuntimeMode.Loose;
