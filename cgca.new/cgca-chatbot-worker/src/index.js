@@ -128,7 +128,8 @@ async function handleChat(request, env) {
 }
 
 /**
- * Handle POST /api/leads — store lead contact info.
+ * Handle POST /api/leads — forward lead info to Google Sheets via Apps Script.
+ * Falls back to KV storage if the Google Sheets webhook is not configured or fails.
  */
 async function handleLeads(request, env) {
   const cors = getCorsHeaders(request);
@@ -146,11 +147,27 @@ async function handleLeads(request, env) {
   }
 
   const timestamp = new Date().toISOString();
-  const leadKey = `lead:${sessionId || "unknown"}:${timestamp}`;
-  const leadData = JSON.stringify({ name, email, sessionId, timestamp });
+  const leadData = { name, email, sessionId, timestamp };
 
-  // Store in KV (primary storage — can be replaced with email/Google Sheets later)
-  await env.CHAT_CACHE.put(leadKey, leadData, { expirationTtl: 7776000 }); // 90 days
+  // Forward to Google Sheets via Apps Script webhook
+  if (env.GOOGLE_SHEETS_WEBHOOK_URL) {
+    try {
+      const sheetResponse = await fetch(env.GOOGLE_SHEETS_WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(leadData),
+      });
+      if (sheetResponse.ok) {
+        return jsonResponse({ success: true }, 200, cors);
+      }
+    } catch {
+      // Fall through to KV backup
+    }
+  }
+
+  // Fallback: store in KV if Google Sheets is unavailable or not configured
+  const leadKey = `lead:${sessionId || "unknown"}:${timestamp}`;
+  await env.CHAT_CACHE.put(leadKey, JSON.stringify(leadData), { expirationTtl: 7776000 });
 
   return jsonResponse({ success: true }, 200, cors);
 }

@@ -1,6 +1,6 @@
 # CGCA Chatbot — Cloudflare Worker
 
-Backend API proxy for the CGCA AI chatbot. Handles chat requests via the Anthropic Claude API and stores lead capture data.
+Backend API proxy for the CGCA AI chatbot. Handles chat requests via the Anthropic Claude API and forwards lead captures to Google Sheets.
 
 ## Prerequisites
 
@@ -20,8 +20,9 @@ npx wrangler login
 npx wrangler kv:namespace create CHAT_CACHE
 npx wrangler kv:namespace create RATE_LIMIT
 
-# Store the Anthropic API key as a secret (never hardcode it)
+# Store secrets (never hardcode them)
 npx wrangler secret put ANTHROPIC_API_KEY
+npx wrangler secret put GOOGLE_SHEETS_WEBHOOK_URL
 ```
 
 After creating KV namespaces, update the `id` fields in `wrangler.toml` with the IDs printed by wrangler.
@@ -52,9 +53,15 @@ https://console.anthropic.com/settings/limits
 ## Endpoints
 
 - `POST /api/chat` — Send chat messages, returns AI response
-- `POST /api/leads` — Submit lead contact info (name, email)
+- `POST /api/leads` — Submit lead contact info (name, email), forwarded to Google Sheets
 
-## Retrieving Leads from KV
+## Lead Storage
+
+Leads are sent to a Google Sheet via an Apps Script webhook (stored as the `GOOGLE_SHEETS_WEBHOOK_URL` secret). If the webhook is unavailable or not configured, leads fall back to Cloudflare KV storage.
+
+See `claude-suggestions/cloudflare-setup-instructions.md` for full Google Sheets setup steps.
+
+### Retrieving fallback leads from KV
 
 ```bash
 npx wrangler kv:key list --binding CHAT_CACHE --prefix "lead:"
