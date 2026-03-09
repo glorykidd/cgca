@@ -7,7 +7,15 @@
       "Bash(dotnet sln:*)",
       "Bash(dotnet build:*)",
       "Bash(dotnet test:*)",
-      "Bash(echo:*)"
+      "Bash(echo:*)",
+      "Bash(git checkout:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(dotnet run:*)"
     ]
-  }
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "Azure ADO Server"
+  ]
 }
