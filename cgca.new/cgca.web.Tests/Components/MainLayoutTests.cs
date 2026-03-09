@@ -1,7 +1,10 @@
 using Bunit;
 using cgca.web.Layout;
+using cgca.web.Models;
+using cgca.web.Services;
 using FluentAssertions;
 using Microsoft.AspNetCore.Components;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace cgca.web.Tests.Components;
@@ -15,6 +18,7 @@ public class MainLayoutTests : BunitContext
     {
         // Mock JS Interop calls for Blazor Bootstrap
         JSInterop.Mode = JSRuntimeMode.Loose;
+        Services.AddSingleton<IChatService, StubChatService>();
     }
 
     [Fact]
