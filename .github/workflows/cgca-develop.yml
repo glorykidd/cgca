@@ -1,12 +1,12 @@
-# Workflow for deploying CGCA Blazor Web App (ASP.NET Core SSR + WASM interactive)
-name: Deploy CGCA Web
+# Workflow for building and testing CGCA Blazor Web App (ASP.NET Core SSR + WASM interactive)
+name: Build-Test CGCA Web
 permissions:
   contents: read
 
 on:
   # Runs on pushes targeting the default branch
   push:
-    branches: ["main"]
+    branches: ["develop"]
     paths: [ cgca.new/** ]
 
   # Allows you to run this workflow manually from the Actions tab
@@ -21,7 +21,7 @@ concurrency:
 jobs:
   # Single deploy job since we're just deploying
   deploy:
-    name: Deploy CGCA Web
+    name: Build and Test CGCA Web
     runs-on: [ self-hosted ]
     steps:
       - name: Checkout new code
@@ -35,11 +35,11 @@ jobs:
           echo "formattedTime=$buildTime" >> $env:GITHUB_OUTPUT
       - name: Run tests for solution
         run: |
-          dotnet test cgca.new/cgca.sln --configuration Release --logger "console;verbosity=minimal" > C:/deployment-stage/cgca-tests-${{ steps.buildid.outputs.formattedTime }}.md
+          dotnet test cgca.new/cgca.sln --configuration Release --logger "console;verbosity=minimal" > C:/deployment-stage/cgca-tests-${{ steps.buildid.outputs.formattedTime }}.md 
       - name: List all changed files
         run: |
           Set-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value ""
-          Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "Publish Results for CGCA"
+          Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "Build Results for CGCA"
           Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value ""
           Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "Build Number - ${{ steps.buildid.outputs.formattedTime }}"
           Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "---------------------------------"
@@ -63,28 +63,10 @@ jobs:
           Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "Test Results:"
           Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "---------------------------------"
           Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value (Get-Content -Path C:/deployment-stage/cgca-tests-${{ steps.buildid.outputs.formattedTime }}.md)
-      - name: Create backup of current website
+      - name: Build new code
         run: |
-          New-Item -ItemType "directory" -Path "C:/deployment-stage/cgca/${{ steps.buildid.outputs.formattedTime }}/" -Force
-          Copy-Item C:/www-root/cedargrovechristianacademy.org/* -Destination C:/deployment-stage/cgca/${{ steps.buildid.outputs.formattedTime }}/ -Recurse
-          Compress-Archive -Path "C:/deployment-stage/cgca/${{ steps.buildid.outputs.formattedTime }}/*" -Update -DestinationPath C:/backups/cgca-${{ steps.buildid.outputs.formattedTime }}.zip -CompressionLevel "Fastest"
-          Remove-Item -Path C:/deployment-stage/cgca/${{ steps.buildid.outputs.formattedTime }} -Recurse
-      - name: Stop IIS app pool before deploy
+          dotnet build cgca.new/cgca.sln --configuration Release
+      - name: Email Notification 
         run: |
-          Import-Module WebAdministration
-          if ((Get-WebAppPoolState -Name "CedarGroveChristianAcademy" -ErrorAction SilentlyContinue).Value -eq "Started") {
-            Stop-WebAppPool -Name "CedarGroveChristianAcademy"
-            Start-Sleep -Seconds 3
-          }
-      - name: Deploy new code
-        run: |
-          cd cgca.new/cgca.web
-          dotnet publish -c Release -o C:/www-root/cedargrovechristianacademy.org/
-      - name: Start IIS app pool after deploy
-        run: |
-          Import-Module WebAdministration
-          Start-WebAppPool -Name "CedarGroveChristianAcademy"
-      - name: Email Notification
-        run: |
-          cd  D:/it-tools/mailer
-          ./SesMailer.exe --to  "David Nuckolls <david.nuckolls@glorykidd.com>" --subject "CGCA Release ${{ steps.buildid.outputs.formattedTime }}" --body C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt --format text  --from-display-name "CGCA Website" 
+          cd  D:/it-tools/mailer 
+          ./SesMailer.exe --to  "David Nuckolls <david.nuckolls@glorykidd.com>" --subject "CGCA Build ${{ steps.buildid.outputs.formattedTime }}" --body C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt --format text  --from-display-name "CGCA Website"

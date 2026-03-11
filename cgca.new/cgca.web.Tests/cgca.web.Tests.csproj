@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\cgca.web\cgca.web.csproj" />
+    <ProjectReference Include="..\cgca.web.client\cgca.web.client.csproj" />
   </ItemGroup>
 
 </Project>

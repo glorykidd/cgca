@@ -1,12 +1,147 @@
-﻿<Router AppAssembly="@typeof(App).Assembly">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-    </Found>
-    <NotFound>
-        <PageTitle>Not found</PageTitle>
-        <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
-        </LayoutView>
-    </NotFound>
-</Router>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+
+    <!-- Default meta - overridden per page via HeadContent -->
+    <title>Cedar Grove Christian Academy | Christ-Centered Pre-School in Shepherdsville, KY</title>
+    <meta name="description" content="Cedar Grove Christian Academy offers Christ-centered pre-school education for ages 3-5 in Shepherdsville, KY. Small class sizes, biblical worldview, and academic rigor. Enroll today!" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Cedar Grove Christian Academy" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:image" content="https://www.cedargrovechristianacademy.org/images/cgca-logo.png" />
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://www.cedargrovechristianacademy.org" />
+
+    <!-- Preload critical assets -->
+    <link rel="preload" href="images/cgca-logo.png" as="image" />
+
+    <!-- DNS prefetch and preconnect for external resources -->
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-0ZQ2NMY9F1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-0ZQ2NMY9F1');
+
+        // GA4 event tracking helpers
+        window.cgcaTrack = function(eventName, params) {
+            gtag('event', eventName, params || {});
+        };
+    </script>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link href="_content/Blazor.Bootstrap/blazor.bootstrap.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/app.css" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <link href="cgca.web.styles.css" rel="stylesheet" />
+
+    <!-- Structured data for SEO -->
+    <script type="application/ld+json">
+    {
+        "@@context": "https://schema.org",
+        "@@type": "EducationalOrganization",
+        "name": "Cedar Grove Christian Academy",
+        "alternateName": "CGCA",
+        "url": "https://www.cedargrovechristianacademy.org",
+        "logo": "https://www.cedargrovechristianacademy.org/images/cgca-logo.png",
+        "description": "Christ-centered pre-school education for ages 3-5 in Shepherdsville, KY. Academic rigor, biblical worldview, and Christ-centered learning.",
+        "telephone": "(502) 543-4101",
+        "address": {
+            "@@type": "PostalAddress",
+            "streetAddress": "4900 Cedar Grove Rd",
+            "addressLocality": "Shepherdsville",
+            "addressRegion": "KY",
+            "postalCode": "40165",
+            "addressCountry": "US"
+        },
+        "email": "contactus@cedargrovechristianacademy.org",
+        "sameAs": [
+            "https://www.facebook.com/cedargrovechristianacademy",
+            "https://www.linkedin.com/company/cg-christian-academy",
+            "https://www.instagram.com/cedargrove.christianacademy/"
+        ],
+        "hasOfferCatalog": {
+            "@@type": "OfferCatalog",
+            "name": "Pre-School Programs",
+            "itemListElement": [
+                {
+                    "@@type": "Offer",
+                    "itemOffered": {
+                        "@@type": "EducationalOccupationalProgram",
+                        "name": "Pre-School K3",
+                        "description": "Christ-centered pre-school program for 3-year-olds"
+                    }
+                },
+                {
+                    "@@type": "Offer",
+                    "itemOffered": {
+                        "@@type": "EducationalOccupationalProgram",
+                        "name": "Pre-School K4/K5",
+                        "description": "Christ-centered pre-school program for 4 and 5-year-olds"
+                    }
+                }
+            ]
+        }
+    }
+    </script>
+
+    <HeadOutlet />
+</head>
+
+<body>
+    <a href="#main-content" class="skip-to-content">Skip to main content</a>
+    <Routes />
+
+    <script src="_framework/blazor.web.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
+        crossorigin="anonymous"></script>
+    <script src="_content/Blazor.Bootstrap/blazor.bootstrap.js"></script>
+
+    <!-- GA4 conversion tracking for CTA clicks -->
+    <script>
+        document.addEventListener('click', function(e) {
+            var link = e.target.closest('a[href], button');
+            if (!link) return;
+            var href = link.getAttribute('href') || '';
+            var text = (link.textContent || '').trim().toLowerCase();
+
+            // Track enrollment/register clicks
+            if (href.includes('praxischool.com/site_login')) {
+                cgcaTrack('enroll_click', { link_text: text, link_url: href });
+            }
+            // Track donation clicks
+            else if (href.includes('remoteDonationPage')) {
+                cgcaTrack('donate_click', { link_text: text, link_url: href });
+            }
+            // Track newsletter signup clicks
+            else if (href.includes('forms.gle/85pj7RGUHaMUNiQy6')) {
+                cgcaTrack('newsletter_signup_click', { link_text: text });
+            }
+            // Track contact form views
+            else if (href === '/contact') {
+                cgcaTrack('contact_page_click', { link_text: text });
+            }
+            // Track admissions page views
+            else if (href === '/admissions') {
+                cgcaTrack('admissions_click', { link_text: text });
+            }
+        });
+    </script>
+</body>
+
+</html>
