@@ -30,10 +30,9 @@ jobs:
           fetch-depth: 0
       - name: Generate build number
         id: buildid
-        uses: josStorer/get-current-time@v2.1.2
-        with:
-          utcOffset: "00:00"
-          format: YYYY.MM.DD-HH.mm
+        run: |
+          $buildTime = (Get-Date).ToUniversalTime().ToString("yyyy.MM.dd-HH.mm")
+          echo "formattedTime=$buildTime" >> $env:GITHUB_OUTPUT
       - name: Run tests for solution
         run: |
           dotnet test cgca.new/cgca.sln --configuration Release --logger "console;verbosity=minimal" > C:/deployment-stage/cgca-tests-${{ steps.buildid.outputs.formattedTime }}.md
