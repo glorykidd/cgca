@@ -64,50 +64,10 @@
   <div class="col-sm-12 col-md-6 col-lg-4">
     <Card TextAlignment="Alignment.Center" Style="border: 0px;">
       <CardBody>
-        <a @onclick="@(() => tuition.ShowAsync())" style="cursor: pointer;">
+        <a style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#tuitionModal">
           <img src="images/tuition.png" alt="Tuition Details" loading="lazy" style="height: 100px; padding-bottom: 10px;" />
         </a>
         <CardTitle>Tuition</CardTitle>
-        <Modal @ref="tuition" Title="Tuition Details" Size="ModalSize.Large" IsVerticallyCentered="true">
-          <BodyTemplate>
-            <div class="modal-sidebar">
-              <div style="width: 38%; float: left;">
-                <p><b>Available Classes</b></p>
-                <ul>
-                  <li>Pre-School (K3)</li>
-                  <li>Pre-School (K4/5)</li>
-                </ul>
-                <p><b>Before / After Care</b></p>
-                <ul>
-                  <li>Not currently available</li>
-                </ul>
-              </div>
-              <div style="width: 58%; float: left;">
-                <p><b>Weekly</b></p>
-                <ul>
-                  <li>Tuesday - Thursday</li>
-                  <li>9:30 - 12:30 PM</li>
-                  <li>Doors open at 9:15</li>
-                </ul>
-                <p><b>Basic Schedule</b></p>
-                <ul>
-                  <li>Will follow the same basic schedule as BCPS, please see the calendar for specific details.</li>
-                </ul>
-              </div>
-              <div style="width: 98%; float: left;">
-                <p><b>Tuition Costs (2026/27 school year)</b></p>
-                <ul>
-                  <li>Registration Total: $125 (Registration $75; Art Fee $50)</li>
-                  <li>Tuition Total: $175 / month; or pay in advance and save 10%!</li>
-                  <li>Discount of $10 off the monthly fee for each additional sibling</li>
-                </ul>
-              </div>
-            </div>
-          </BodyTemplate>
-          <FooterTemplate>
-            <Button Color="ButtonColor.Secondary" @onclick="@(() => tuition.HideAsync())">Close</Button>
-          </FooterTemplate>
-        </Modal>
       </CardBody>
     </Card>
   </div>
@@ -123,6 +83,52 @@
   </div>
 </div>
 
-@code {
-  private Modal tuition = null!;
-}
+<!-- Tuition Modal -->
+<div class="modal fade" id="tuitionModal" tabindex="-1" aria-labelledby="tuitionModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="tuitionModalLabel">Tuition Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-sidebar">
+          <div style="width: 38%; float: left;">
+            <p><b>Available Classes</b></p>
+            <ul>
+              <li>Pre-School (K3)</li>
+              <li>Pre-School (K4/5)</li>
+            </ul>
+            <p><b>Before / After Care</b></p>
+            <ul>
+              <li>Not currently available</li>
+            </ul>
+          </div>
+          <div style="width: 58%; float: left;">
+            <p><b>Weekly</b></p>
+            <ul>
+              <li>Tuesday - Thursday</li>
+              <li>9:30 - 12:30 PM</li>
+              <li>Doors open at 9:15</li>
+            </ul>
+            <p><b>Basic Schedule</b></p>
+            <ul>
+              <li>Will follow the same basic schedule as BCPS, please see the calendar for specific details.</li>
+            </ul>
+          </div>
+          <div style="width: 98%; float: left;">
+            <p><b>Tuition Costs (2026/27 school year)</b></p>
+            <ul>
+              <li>Registration Total: $125 (Registration $75; Art Fee $50)</li>
+              <li>Tuition Total: $175 / month; or pay in advance and save 10%!</li>
+              <li>Discount of $10 off the monthly fee for each additional sibling</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

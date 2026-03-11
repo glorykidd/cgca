@@ -346,6 +346,14 @@ code {
     margin: 0 auto 1rem;
 }
 
+/* --- About page modal buttons --- */
+.btn-about-modal {
+    min-width: 260px;
+    padding: 0.6rem 1.25rem;
+    font-size: 1rem;
+    white-space: nowrap;
+}
+
 /* --- Footer improvements --- */
 .site-footer a {
     color: whitesmoke;
