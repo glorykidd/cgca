@@ -1,11 +1,14 @@
 name = "cgca-chatbot"
 main = "src/index.js"
 compatibility_date = "2025-01-01"
+workers_dev = true
+preview_urls = false
+account_id = "8c4b285f0ccf83eac962d9e4207a8c3f"
 
 [[kv_namespaces]]
 binding = "CHAT_CACHE"
-id = "REPLACE_WITH_KV_NAMESPACE_ID"
+id = "e3a7c1e6988e409aa04f6f95c9000fd1"
 
 [[kv_namespaces]]
 binding = "RATE_LIMIT"
-id = "REPLACE_WITH_KV_NAMESPACE_ID"
+id = "caf512a2745f4a21b2840ccf602cfc22"
