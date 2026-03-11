@@ -1,7 +1,7 @@
 using Bunit;
 using cgca.web;
 using cgca.web.Pages;
-using cgca.web.Services;
+using cgca.web.client.Services;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -91,14 +91,14 @@ public class RoutingTests : BunitContext
     }
 
     [Fact]
-    public void App_RendersWithRouter()
+    public void Routes_RendersWithRouter()
     {
         // Arrange & Act
-        var cut = Render<App>();
+        var cut = Render<Routes>();
 
         // Assert
-        cut.Should().NotBeNull("App should render with router");
-        cut.Markup.Should().NotBeEmpty("App should have content");
+        cut.Should().NotBeNull("Routes should render with router");
+        cut.Markup.Should().NotBeEmpty("Routes should have content");
     }
 
     [Fact]

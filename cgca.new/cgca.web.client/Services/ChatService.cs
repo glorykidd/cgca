@@ -1,8 +1,8 @@
 using System.Net.Http.Json;
-using cgca.web.Models;
+using cgca.web.client.Models;
 using Microsoft.Extensions.Configuration;
 
-namespace cgca.web.Services;
+namespace cgca.web.client.Services;
 
 public class ChatService : IChatService
 {

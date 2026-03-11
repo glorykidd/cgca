@@ -1,4 +1,4 @@
-# Simple workflow for deploying static content to GitHub Pages
+# Workflow for deploying CGCA Blazor Web App (ASP.NET Core SSR + WASM interactive)
 name: Deploy CGCA Web
 permissions:
   contents: read
@@ -36,7 +36,7 @@ jobs:
           format: YYYY.MM.DD-HH.mm
       - name: Run tests for solution
         run: |
-          dotnet test cgca.new/cgca.sln --configuration Release --logger "console;verbosity=minimal" > C:/deployment-stage/cgca-tests-${{ steps.buildid.outputs.formattedTime }}.md 
+          dotnet test cgca.new/cgca.sln --configuration Release --logger "console;verbosity=minimal" > C:/deployment-stage/cgca-tests-${{ steps.buildid.outputs.formattedTime }}.md
       - name: List all changed files
         run: |
           Set-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value ""
@@ -65,12 +65,22 @@ jobs:
           Copy-Item C:/www-root/cedargrovechristianacademy.org/* -Destination C:/deployment-stage/cgca/${{ steps.buildid.outputs.formattedTime }}/ -Recurse
           Compress-Archive -Path "C:/deployment-stage/cgca/${{ steps.buildid.outputs.formattedTime }}/*" -Update -DestinationPath C:/backups/cgca-${{ steps.buildid.outputs.formattedTime }}.zip -CompressionLevel "Fastest"
           Remove-Item -Path C:/deployment-stage/cgca/${{ steps.buildid.outputs.formattedTime }} -Recurse
+      - name: Stop IIS app pool before deploy
+        run: |
+          Import-Module WebAdministration
+          if ((Get-WebAppPoolState -Name "cedargrovechristianacademy.org" -ErrorAction SilentlyContinue).Value -eq "Started") {
+            Stop-WebAppPool -Name "cedargrovechristianacademy.org"
+            Start-Sleep -Seconds 3
+          }
       - name: Deploy new code
         run: |
           cd cgca.new/cgca.web
-          dotnet build
-          dotnet publish -c Release -o C:/www-root/cedargrovechristianacademy.org/     
-      - name: Email Notification 
+          dotnet publish -c Release -o C:/www-root/cedargrovechristianacademy.org/
+      - name: Start IIS app pool after deploy
         run: |
-          cd  D:/it-tools/mailer 
+          Import-Module WebAdministration
+          Start-WebAppPool -Name "cedargrovechristianacademy.org"
+      - name: Email Notification
+        run: |
+          cd  D:/it-tools/mailer
           ./SesMailer.exe --to dlnuckolls@gmail.com --subject "CGCA Release ${{ steps.buildid.outputs.formattedTime }}" --body C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt --format text

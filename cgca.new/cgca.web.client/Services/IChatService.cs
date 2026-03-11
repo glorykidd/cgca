@@ -1,6 +1,6 @@
-using cgca.web.Models;
+using cgca.web.client.Models;
 
-namespace cgca.web.Services;
+namespace cgca.web.client.Services;
 
 public interface IChatService
 {

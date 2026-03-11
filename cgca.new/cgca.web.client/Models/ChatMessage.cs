@@ -1,4 +1,4 @@
-namespace cgca.web.Models;
+namespace cgca.web.client.Models;
 
 public class ChatMessage
 {

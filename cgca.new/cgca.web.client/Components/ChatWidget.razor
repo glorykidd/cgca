@@ -1,5 +1,5 @@
-@using cgca.web.Models
-@using cgca.web.Services
+@using cgca.web.client.Models
+@using cgca.web.client.Services
 @inject IChatService ChatService
 
 <!-- Floating chat toggle button -->
@@ -162,13 +162,11 @@
             var response = await ChatService.SendMessageAsync(request);
             messages.Add(new ChatMessage { Role = "assistant", Content = response.Reply });
 
-            // Detect session cap message from the server
             if (response.Reply.Contains("reached the limit for this chat session", StringComparison.OrdinalIgnoreCase))
             {
                 sessionCapped = true;
             }
 
-            // Show lead capture form after the user's 2nd message
             if (userMessageCount >= 2 && !leadCaptured && !showLeadForm)
             {
                 showLeadForm = true;
@@ -206,7 +204,6 @@
         }
         catch
         {
-            // Silently fail — don't disrupt the chat for a lead capture failure
             leadCaptured = true;
             showLeadForm = false;
         }
