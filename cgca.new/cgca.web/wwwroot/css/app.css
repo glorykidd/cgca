@@ -121,6 +121,25 @@ code {
     text-align: start;
 }
 
+/* --- Accessibility --- */
+.skip-to-content {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 99999;
+    padding: 0.75rem 1.5rem;
+    background: var(--cgca-primary-blue, #0441f7);
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    border-radius: 0 0 8px 0;
+}
+
+.skip-to-content:focus {
+    left: 0;
+    color: white;
+}
+
 /* --- CGCA custom properties --- */
 :root {
     --cgca-gradient: linear-gradient(to bottom, rgb(0, 123, 255), rgb(0, 255, 187));

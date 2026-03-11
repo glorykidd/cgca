@@ -19,6 +19,9 @@
     <!-- Canonical -->
     <link rel="canonical" href="https://www.cedargrovechristianacademy.org" />
 
+    <!-- Preload critical assets -->
+    <link rel="preload" href="images/cgca-logo.png" as="image" />
+
     <!-- DNS prefetch and preconnect for external resources -->
     <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
@@ -31,6 +34,11 @@
         function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
         gtag('config', 'G-0ZQ2NMY9F1');
+
+        // GA4 event tracking helpers
+        window.cgcaTrack = function(eventName, params) {
+            gtag('event', eventName, params || {});
+        };
     </script>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -95,6 +103,7 @@
 </head>
 
 <body>
+    <a href="#main-content" class="skip-to-content">Skip to main content</a>
     <Routes />
 
     <script src="_framework/blazor.web.js"></script>
@@ -102,6 +111,37 @@
         integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q"
         crossorigin="anonymous"></script>
     <script src="_content/Blazor.Bootstrap/blazor.bootstrap.js"></script>
+
+    <!-- GA4 conversion tracking for CTA clicks -->
+    <script>
+        document.addEventListener('click', function(e) {
+            var link = e.target.closest('a[href], button');
+            if (!link) return;
+            var href = link.getAttribute('href') || '';
+            var text = (link.textContent || '').trim().toLowerCase();
+
+            // Track enrollment/register clicks
+            if (href.includes('praxischool.com/site_login')) {
+                cgcaTrack('enroll_click', { link_text: text, link_url: href });
+            }
+            // Track donation clicks
+            else if (href.includes('remoteDonationPage')) {
+                cgcaTrack('donate_click', { link_text: text, link_url: href });
+            }
+            // Track newsletter signup clicks
+            else if (href.includes('forms.gle/85pj7RGUHaMUNiQy6')) {
+                cgcaTrack('newsletter_signup_click', { link_text: text });
+            }
+            // Track contact form views
+            else if (href === '/contact') {
+                cgcaTrack('contact_page_click', { link_text: text });
+            }
+            // Track admissions page views
+            else if (href === '/admissions') {
+                cgcaTrack('admissions_click', { link_text: text });
+            }
+        });
+    </script>
 </body>
 
 </html>

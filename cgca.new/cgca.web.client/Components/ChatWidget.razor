@@ -1,6 +1,7 @@
 @using cgca.web.client.Models
 @using cgca.web.client.Services
 @inject IChatService ChatService
+@inject IJSRuntime JS
 
 <!-- Floating chat toggle button -->
 <button class="chat-toggle-btn" @onclick="ToggleChat" aria-label="@(isOpen ? "Close chat" : "Chat with Gracie")">
@@ -115,10 +116,14 @@
     private List<ChatMessage> messages = new();
     private ElementReference messagesContainer;
 
-    private void ToggleChat()
+    private async Task ToggleChat()
     {
         isOpen = !isOpen;
         errorMessage = null;
+        if (isOpen)
+        {
+            try { await JS.InvokeVoidAsync("cgcaTrack", "chatbot_open"); } catch { }
+        }
     }
 
     private void HandleKeyDown(KeyboardEventArgs e)
@@ -201,6 +206,7 @@
             await ChatService.SubmitLeadAsync(lead);
             leadCaptured = true;
             showLeadForm = false;
+            try { await JS.InvokeVoidAsync("cgcaTrack", "lead_captured", new { method = "chatbot" }); } catch { }
         }
         catch
         {
