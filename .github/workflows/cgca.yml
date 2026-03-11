@@ -84,6 +84,13 @@ jobs:
         run: |
           Import-Module WebAdministration
           Start-WebAppPool -Name "CedarGroveChristianAcademy"
+      - name: Deploy chatbot worker to Cloudflare
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          cd cgca.new/cgca-chatbot-worker
+          npm ci
+          npx wrangler deploy
       - name: Email Notification
         run: |
           cd  D:/it-tools/mailer
