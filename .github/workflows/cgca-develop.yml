@@ -1,4 +1,4 @@
-# Simple workflow for deploying static content to GitHub Pages
+# Workflow for building and testing CGCA Blazor Web App (ASP.NET Core SSR + WASM interactive)
 name: Build-Test CGCA Web
 permissions:
   contents: read
@@ -40,30 +40,26 @@ jobs:
       - name: List all changed files
         run: |
           Set-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value ""
-          Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "Publish Results for CGCA"
+          Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "Build Results for CGCA"
           Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value ""
-          Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "Test Results:"
-          Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value (Get-Content -Path C:/deployment-stage/cgca-tests-${{ steps.buildid.outputs.formattedTime }}.md)
+          Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "Build Number - ${{ steps.buildid.outputs.formattedTime }}"
           Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "---------------------------------"
           Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value ""
           Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "Commit Item Messages:"
           Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "---------------------------------"
           Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value $(git log --format=%B -n 1 HEAD)
           Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value ""
-          Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "---------------------------------"
-          Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "Build Number - ${{ steps.buildid.outputs.formattedTime }}"
-          Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "---------------------------------"
-          Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value ""
           Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "Changed Files"
           Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "---------------------------------"
           Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value $(git diff --name-status ORIG_HEAD..)
-          Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "---------------------------------"
           Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value ""
+          Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "Test Results:"
+          Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "---------------------------------"
+          Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value (Get-Content -Path C:/deployment-stage/cgca-tests-${{ steps.buildid.outputs.formattedTime }}.md)
       - name: Build new code
         run: |
-          cd cgca.new/cgca.web
-          dotnet build
+          dotnet build cgca.new/cgca.sln --configuration Release
       - name: Email Notification 
         run: |
           cd  D:/it-tools/mailer 
-          ./SesMailer.exe --to dlnuckolls@gmail.com --subject "CGCA Develop Build ${{ steps.buildid.outputs.formattedTime }}" --body C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt --format text
+          ./SesMailer.exe --to  "David Nuckolls <david.nuckolls@glorykidd.com>" --subject "CGCA Build ${{ steps.buildid.outputs.formattedTime }}" --body C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt --format text  --from-display-name "CGCA Website"

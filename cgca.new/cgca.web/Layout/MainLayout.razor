@@ -1,8 +1,8 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
 
 <NavMenu />
 
-<main class="container" style="height: 100%;">
+<main id="main-content" class="container" style="height: 100%;">
   <div class="container">
 
     @Body
@@ -13,26 +13,52 @@
   </div>
 </main>
 <footer class="site-footer">
-  <p>Cedar Grove Christian Academy, Inc</p>
-  <p>Copyright &copy; @DateTime.Now.Year, All rights reserved.</p>
-  <a href="/privacy" class="text-decoration-none" aria-label="Privacy Policy">
-    Privacy Policy&nbsp;&nbsp;
-    <Icon Name="IconName.ShieldCheck" />
-  </a>
-  <nav aria-label="Social media links" style="margin-top: 0.5rem;">
-    <a href="https://www.facebook.com/cedargrovechristianacademy" class="text-decoration-none"
-      aria-label="Visit our Facebook page" target="_blank" rel="noopener noreferrer">
-      <Icon Name="IconName.Facebook" Size="IconSize.x3" />
-    </a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <a href="https://www.linkedin.com/company/cg-christian-academy" class="text-decoration-none"
-      aria-label="Visit our LinkedIn page" target="_blank" rel="noopener noreferrer">
-      <Icon Name="IconName.Linkedin" Size="IconSize.x3" />
-    </a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <a href="https://www.instagram.com/cedargrove.christianacademy/" class="text-decoration-none"
-      aria-label="Visit our Instagram page" target="_blank" rel="noopener noreferrer">
-      <Icon Name="IconName.Instagram" Size="IconSize.x3" />
-    </a>
-  </nav>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-4 col-sm-12 mb-3 mb-md-0">
+        <p><strong>Cedar Grove Christian Academy, Inc</strong></p>
+        <p>4900 Cedar Grove Rd<br />Shepherdsville, KY 40165</p>
+        <p><a href="tel:+15025434101" class="text-light">(502) 543-4101</a></p>
+      </div>
+      <div class="col-md-4 col-sm-12 mb-3 mb-md-0 text-center">
+        <p><strong>Quick Links</strong></p>
+        <p>
+          <a href="/admissions" class="text-light text-decoration-none">Admissions</a><br />
+          <a href="/programs" class="text-light text-decoration-none">Programs</a><br />
+          <a href="/calendar" class="text-light text-decoration-none">Calendar</a><br />
+          <a href="https://forms.gle/X4Go6u1iYqaH6WGg8" target="_blank" rel="noopener noreferrer" class="text-light text-decoration-none">School Board</a>
+        </p>
+      </div>
+      <div class="col-md-4 col-sm-12 text-center text-md-end">
+        <p><strong>Connect With Us</strong></p>
+        <nav aria-label="Social media links">
+          <a href="https://www.facebook.com/cedargrovechristianacademy" class="text-decoration-none"
+            aria-label="Visit our Facebook page" target="_blank" rel="noopener noreferrer">
+            <Icon Name="IconName.Facebook" Size="IconSize.x3" />
+          </a>&nbsp;&nbsp;&nbsp;
+          <a href="https://www.linkedin.com/company/cg-christian-academy" class="text-decoration-none"
+            aria-label="Visit our LinkedIn page" target="_blank" rel="noopener noreferrer">
+            <Icon Name="IconName.Linkedin" Size="IconSize.x3" />
+          </a>&nbsp;&nbsp;&nbsp;
+          <a href="https://www.instagram.com/cedargrove.christianacademy/" class="text-decoration-none"
+            aria-label="Visit our Instagram page" target="_blank" rel="noopener noreferrer">
+            <Icon Name="IconName.Instagram" Size="IconSize.x3" />
+          </a>
+        </nav>
+      </div>
+    </div>
+    <hr style="border-color: #555;" />
+    <div class="row">
+      <div class="col-12 text-center">
+        <p>Copyright &copy; @DateTime.Now.Year Cedar Grove Christian Academy, Inc. All rights reserved.
+          &nbsp;|&nbsp;
+          <a href="/privacy" class="text-light text-decoration-none">
+            Privacy Policy&nbsp;&nbsp;<Icon Name="IconName.ShieldCheck" />
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
 </footer>
 
-<ChatWidget />
+<ChatWidget @rendermode="@(new InteractiveWebAssemblyRenderMode(prerender: false))" />

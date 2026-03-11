@@ -1,6 +1,6 @@
 using Bunit;
 using cgca.web;
-using cgca.web.Services;
+using cgca.web.client.Services;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -8,7 +8,7 @@ using Xunit;
 namespace cgca.web.Tests.Components;
 
 /// <summary>
-/// Tests for the App component (root component with router).
+/// Tests for the Routes component (root router component).
 /// </summary>
 public class AppTests : BunitContext
 {
@@ -23,34 +23,34 @@ public class AppTests : BunitContext
     }
 
     [Fact]
-    public void App_RendersWithoutException()
+    public void Routes_RendersWithoutException()
     {
         // Arrange & Act
-        var cut = Render<App>();
+        var cut = Render<Routes>();
 
         // Assert
-        cut.Should().NotBeNull("App component should render");
-        cut.Markup.Should().NotBeEmpty("App component should have content");
+        cut.Should().NotBeNull("Routes component should render");
+        cut.Markup.Should().NotBeEmpty("Routes component should have content");
     }
 
     [Fact]
-    public void App_ContainsRouterComponent()
+    public void Routes_ContainsRouterComponent()
     {
         // Arrange & Act
-        var cut = Render<App>();
+        var cut = Render<Routes>();
 
         // Assert - Router should be present (indicated by content rendering)
         cut.Markup.Should().NotBeEmpty("Router should render content");
     }
 
     [Fact]
-    public void App_HasNotFoundConfiguration()
+    public void Routes_HasNotFoundConfiguration()
     {
         // Arrange & Act
-        var cut = Render<App>();
+        var cut = Render<Routes>();
 
-        // Assert - Verify the App component renders successfully
+        // Assert - Verify the Routes component renders successfully
         // The NotFound route configuration is tested by rendering invalid routes
-        cut.Should().NotBeNull("App should have NotFound route configured");
+        cut.Should().NotBeNull("Routes should have NotFound route configured");
     }
 }

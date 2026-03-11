@@ -1,7 +1,7 @@
 using Bunit;
 using cgca.web.Layout;
-using cgca.web.Models;
-using cgca.web.Services;
+using cgca.web.client.Models;
+using cgca.web.client.Services;
 using FluentAssertions;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.DependencyInjection;

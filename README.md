@@ -2,86 +2,147 @@
 
 ## Summary
 
-The CGCA website is a client-side single-page application built with Blazor WebAssembly on .NET 10.0. It serves as the public-facing site for Cedar Grove Christian Academy, providing information about the school's mission, values, and programs to prospective and current families. The site includes pages for school information, parent resources, an embedded event calendar, a contact form, and a privacy policy. Third-party services — Google Calendar, Google Forms, SermonAudio, and Praxi School — are integrated via embedded content and external links.
+The CGCA website is a server-rendered Blazor application built on .NET 10.0 with an interactive WebAssembly island for the AI chatbot. It serves as the public-facing site for Cedar Grove Christian Academy, providing SEO-optimized, marketing-focused content about the school's mission, programs, admissions, and values to prospective and current families. The site includes pages for school information, programs, admissions with tuition details, parent resources, an embedded event calendar, a contact form, and a privacy policy. Third-party services — Google Calendar, Google Forms, and Praxis School — are integrated via embedded content and external links. An AI chatbot ("Gracie") powered by a Cloudflare Worker backend assists visitors with common questions.
 
 ## Technology Overview
 
 | Layer | Technology |
 |---|---|
-| Framework | .NET 10.0 / ASP.NET Core Blazor WebAssembly |
+| Framework | .NET 10.0 / ASP.NET Core Blazor (SSR + Interactive WASM) |
 | Language | C# (nullable reference types, implicit usings) |
-| UI Components | Blazor Bootstrap 3.5.0 |
+| UI Components | Blazor Bootstrap 3.5.0, Bootstrap 5.3.7 native modals |
 | CSS Framework | Bootstrap 5.3.7 (CDN) |
 | Icons | Bootstrap Icons 1.13.1 (CDN) |
-| Analytics | Google Analytics 4 |
+| Analytics | Google Analytics 4 with custom event tracking |
+| AI Chatbot | Cloudflare Worker backend, Blazor WASM interactive widget |
 | Testing | xUnit, bUnit 2.5.3, FluentAssertions 8.8.0 |
-| CI/CD | GitHub Actions — self-hosted Windows runner |
+| CI/CD | GitHub Actions — self-hosted Windows runner, IIS deployment |
 | License | MIT |
 
-The application runs entirely in the browser via WebAssembly. There is no server-side rendering, no database, and no backend API. Content is static HTML within Razor components, supplemented by embedded third-party services.
+Pages are statically rendered on the server (SSR) for fast load times and full SEO crawlability. The AI chatbot runs as an Interactive WebAssembly island — the only component requiring client-side interactivity. There is no database; all content is static HTML within Razor components, supplemented by embedded third-party services.
 
 ## Architecture Overview
 
-The application is a purely client-side Blazor WebAssembly SPA with no server-side backend. The solution consists of two projects under `cgca.new/`:
+The application uses a two-project architecture under `cgca.new/`:
+
+- **`cgca.web`** — ASP.NET Core server that statically renders all pages and serves the WASM runtime for interactive components
+- **`cgca.web.client`** — Blazor WebAssembly project containing the interactive chatbot widget and its supporting services/models
 
 ```
 cgca.new/
-├── cgca.sln                      # Solution file
-├── cgca.web/                     # Main web application
-│   ├── Program.cs                # App entry point — WASM host, DI, service registration
-│   ├── App.razor                 # Root component — router with NotFound fallback
-│   ├── _Imports.razor.           # Global using statements
+├── cgca.sln                          # Solution file
+├── cgca.web/                         # Server project (SSR host)
+│   ├── Program.cs                    # ASP.NET Core host — middleware, service registration
+│   ├── App.razor                     # Root HTML document — meta tags, structured data, GA4, CDN refs
+│   ├── Routes.razor                  # Blazor router with NotFound fallback
+│   ├── _Imports.razor                # Global using statements
 │   ├── Layout/
-│   │   ├── MainLayout.razor      # Shared page shell (header, footer, social links)
-│   │   └── NavMenu.razor         # Collapsible navigation bar
-│   ├── Pages/                    # Routable page components
-│   │   ├── Home.razor            # Landing page — mission, values, sermon, registration CTAs
-│   │   ├── About.razor           # Mission, vision, philosophy, core beliefs
-│   │   ├── Parents.razor         # Parent resources and onboarding info
-│   │   ├── Contact.razor         # Contact info with embedded Google Form
-│   │   ├── Calendar.razor        # Embedded Google Calendar
-│   │   └── Privacy.razor         # Privacy policy
-│   ├── Properties/
-│   │   └── launchSettings.json   # Dev server configuration
-│   └── wwwroot/                  # Static assets served to the browser
-│       ├── index.html            # SPA entry point — CDN references for Bootstrap, JS libs
-│       ├── css/app.css           # Global stylesheet
-│       ├── images/               # Site images
-│       └── lib/                  # Local library assets
-└── cgca.web.Tests/               # Unit test project
-    ├── Components/               # Component unit tests
-    │   ├── AppTests.cs           # App component and router tests
-    │   ├── NavMenuTests.cs       # Navigation menu toggle and rendering tests
-    │   └── MainLayoutTests.cs    # Layout component tests
-    ├── Pages/                    # Page rendering tests
-    │   └── PageRenderingTests.cs # Tests for all pages
-    └── Integration/              # Integration tests
-        └── RoutingTests.cs       # Route resolution tests
+│   │   ├── MainLayout.razor          # Shared page shell (nav, footer, social links, chatbot)
+│   │   └── NavMenu.razor             # Collapsible navigation bar
+│   ├── Pages/                        # Routable page components (static SSR)
+│   │   ├── Home.razor                # Landing page — hero, quick facts, benefits, ABCs, CTAs
+│   │   ├── About.razor               # Mission, vision, philosophy, statement of faith, conduct
+│   │   ├── Programs.razor            # K3 and K4/K5 program details and schedules
+│   │   ├── Admissions.razor          # Enrollment steps, tuition/fees, program cards
+│   │   ├── Parents.razor             # Parent resources, tuition details, portal link
+│   │   ├── Contact.razor             # Contact info, Google Maps, newsletter, Google Form
+│   │   ├── Calendar.razor            # Embedded Google Calendar
+│   │   └── Privacy.razor             # Privacy policy
+│   └── wwwroot/                      # Static assets
+│       ├── css/app.css               # Global stylesheet
+│       ├── images/                   # Optimized site images
+│       ├── robots.txt                # Search engine crawl directives
+│       └── sitemap.xml               # XML sitemap for SEO
+├── cgca.web.client/                  # WASM client project (interactive island)
+│   ├── Program.cs                    # WASM host — HttpClient, ChatService registration
+│   ├── _Imports.razor                # Client-side usings
+│   ├── Components/
+│   │   ├── ChatWidget.razor          # AI chatbot widget (Gracie)
+│   │   └── ChatWidget.razor.css      # Chatbot scoped styles
+│   ├── Models/                       # Chat data models
+│   │   ├── ChatMessage.cs
+│   │   ├── ChatRequest.cs
+│   │   ├── ChatResponse.cs
+│   │   └── LeadRequest.cs
+│   ├── Services/                     # Chat API services
+│   │   ├── IChatService.cs
+│   │   └── ChatService.cs
+│   └── wwwroot/
+│       └── appsettings.json          # ChatApiBaseUrl configuration
+└── cgca.web.Tests/                   # Unit test project
+    ├── StubChatService.cs            # Mock chat service for testing
+    ├── Components/
+    │   ├── AppTests.cs               # Routes component and router tests
+    │   ├── NavMenuTests.cs           # Navigation links, toggle, rendering
+    │   └── MainLayoutTests.cs        # Layout structure and content rendering
+    ├── Pages/
+    │   └── PageRenderingTests.cs     # All pages render without exceptions
+    └── Integration/
+        └── RoutingTests.cs           # Route resolution for all 8 routes
 ```
 
-Routing is handled by the Blazor `<Router>` in `App.razor`, which renders pages inside `MainLayout`. Styling uses a combination of a global stylesheet (`wwwroot/css/app.css`) and component-scoped CSS files (`.razor.css`) co-located with their components. All CDN dependencies (Bootstrap CSS/JS, Bootstrap Icons, Chart.js, Blazor Bootstrap) are loaded from `wwwroot/index.html`.
+### Rendering Model
+
+- **Static SSR** — All pages are rendered on the server and delivered as complete HTML. This provides instant page loads and allows search engines to crawl all content without executing JavaScript.
+- **Interactive WASM Island** — The chatbot widget (`ChatWidget.razor`) is the sole interactive component, rendered with `InteractiveWebAssemblyRenderMode(prerender: false)` to run client-side only.
+- **Native Bootstrap modals** — Modals on About and Parents pages use Bootstrap 5 `data-bs-toggle`/`data-bs-target` attributes rather than Blazor interactive components, so they work without a client-side runtime.
+
+### SEO Features
+
+- Per-page `<title>`, `<meta description>`, Open Graph, and canonical tags via `<HeadContent>`
+- JSON-LD structured data (`EducationalOrganization` schema) in `App.razor`
+- `robots.txt` and `sitemap.xml` covering all 8 routes
+- Server-rendered HTML for full search engine crawlability
+- Skip-to-content link for accessibility
+
+### Analytics & Conversion Tracking
+
+- Google Analytics 4 (GA4) with tag `G-0ZQ2NMY9F1`
+- Custom `cgcaTrack()` JavaScript helper for event tracking
+- Automatic click tracking for: enrollment, donation, newsletter signup, contact, and admissions CTAs
+- Chatbot events: `chatbot_open`, `lead_captured`
+
+## Pages
+
+| Route | Page | Description |
+|---|---|---|
+| `/` | Home | Hero banner, quick facts, "Why Choose CGCA" benefits, ABCs, enrollment CTA |
+| `/about` | About Us | Mission statement, vision, philosophy, statement of faith, code of conduct (modals) |
+| `/programs` | Programs | K3 and K4/K5 program details, schedules, curriculum overview |
+| `/admissions` | Admissions | 3-step enrollment process, tuition & fees tables, program cards |
+| `/parents` | Parents | Parent resources, tuition modal, school calendar link, parent portal |
+| `/contact` | Contact | Address, phone, email, hours, Google Maps embed, newsletter, Google Form |
+| `/calendar` | Calendar | Embedded Google Calendar |
+| `/privacy` | Privacy | Privacy policy |
+
+## AI Chatbot (Gracie)
+
+The chatbot is an interactive Blazor WASM component that communicates with a Cloudflare Worker backend. It provides:
+
+- Answers to common questions about admissions, tuition, school hours, and programs
+- Lead capture form (name + email) after 2 user messages, submitted to a Google Sheets integration
+- Session-based conversation with message cap
+- GA4 event tracking for opens and lead captures
+
+Configuration: Set `ChatApiBaseUrl` in `cgca.web.client/wwwroot/appsettings.json` to point to the Cloudflare Worker endpoint.
 
 ## Unit Tests
 
-The project includes a comprehensive test suite built with **bUnit**, **xUnit**, and **FluentAssertions** to ensure code quality and prevent regressions.
+The project includes **31 tests** across three categories built with **bUnit**, **xUnit**, and **FluentAssertions**.
 
 ### Test Coverage
 
-The test suite includes **30 tests** across three categories:
-
-#### 1. Component Tests (12 tests)
-- **NavMenuTests**: Toggle functionality, navigation links, external links, logo rendering
-- **AppTests**: App component rendering, router verification, NotFound configuration
+#### 1. Component Tests
+- **NavMenuTests**: Toggle functionality, navigation links, logo rendering
+- **AppTests**: Routes component rendering, router verification, NotFound configuration
 - **MainLayoutTests**: Layout rendering, NavMenu inclusion, body content, container verification
 
-#### 2. Page Rendering Tests (7 tests)
-- Verifies all pages (Home, About, Parents, Contact, Calendar, Privacy) render without exceptions
-- Ensures comprehensive page functionality
+#### 2. Page Rendering Tests
+- Verifies all 8 pages (Home, About, Programs, Admissions, Parents, Contact, Calendar, Privacy) render without exceptions
 
-#### 3. Routing Tests (8 tests)
-- Validates all routes resolve correctly
-- Confirms router configuration
-- Tests route-to-component mapping
+#### 3. Routing Tests
+- Validates all 8 routes resolve correctly
+- Confirms router configuration and route-to-component mapping
 
 ### Running Tests
 
@@ -94,74 +155,24 @@ dotnet test cgca.new/cgca.sln --verbosity detailed
 
 # Run specific test class
 dotnet test --filter "FullyQualifiedName~NavMenuTests"
-
-# Run tests in specific namespace
-dotnet test --filter "FullyQualifiedName~Components"
 ```
-
-### Test Framework Details
 
 | Framework | Purpose |
 |---|---|
-| **xUnit** | Core test framework for organizing and running tests |
-| **bUnit 2.5.3** | Blazor component testing library for rendering and interacting with components |
-| **FluentAssertions 8.8.0** | Provides readable, expressive assertion syntax |
+| **xUnit** | Core test framework |
+| **bUnit 2.5.3** | Blazor component rendering and interaction testing |
+| **FluentAssertions 8.8.0** | Readable, expressive assertion syntax |
 
-### CI/CD Integration
+## Commands
 
-Tests are automatically executed during the GitHub Actions deployment workflow:
-- Tests run immediately after code checkout
-- Deployment only proceeds if all tests pass
-- Test failures block the production deployment
-- Detailed test output is logged for debugging
-
-### Writing New Tests
-
-When adding new components or features, follow these patterns:
-
-1. **Component Tests**: Test interactive behavior, state changes, and rendering
-2. **Page Tests**: Ensure pages render without exceptions and contain expected content
-3. **Routing Tests**: Verify new routes resolve correctly
-
-Example test structure:
-```csharp
-public class MyComponentTests : BunitContext
-{
-    public MyComponentTests()
-    {
-        // Setup services and mock JS Interop
-        Services.AddBlazorBootstrap();
-        JSInterop.Mode = JSRuntimeMode.Loose;
-    }
-
-    [Fact]
-    public void MyComponent_RendersCorrectly()
-    {
-        // Arrange & Act
-        var cut = Render<MyComponent>();
-
-        // Assert
-        cut.Should().NotBeNull();
-        cut.Markup.Should().NotBeEmpty();
-    }
-}
-```
-
-## Contribution Instructions
-
-### Prerequisites
-
-- [.NET 10.0 SDK](https://dotnet.microsoft.com/download)
-
-### Getting Started
+All commands run from `cgca.new/`:
 
 ```bash
 # Build the solution
-cd cgca.new
-dotnet build
+dotnet build cgca.sln
 
 # Run tests
-dotnet test
+dotnet test cgca.sln
 
 # Start the dev server
 cd cgca.web
@@ -170,22 +181,37 @@ dotnet run
 
 The dev server starts on **http://localhost:5297** and **https://localhost:7183**.
 
-### Branching
+## Branching
 
 - `main` — production branch; pushes trigger the deployment pipeline
 - `develop` — primary development branch; use as the base for all pull requests
 
 Create feature branches off `develop` and open PRs back into `develop`.
 
-### Deployment
+## CI/CD & Deployment
 
-Deployments are automated via GitHub Actions (`.github/workflows/cgca.yml`). The workflow triggers on pushes to `main` that include changes under `cgca.new/`.
+Two GitHub Actions workflows (`.github/workflows/`) automate builds and deployments on a self-hosted Windows runner with IIS:
 
-**Deployment Pipeline:**
-1. Code checkout from repository
-2. **Run unit tests** — deployment aborts if tests fail
-3. Generate build number (timestamp)
-4. Create backup of current production deployment
-5. Build and publish to production server
+### Develop Branch (`cgca-develop.yml`)
+
+Triggers on push to `develop` with changes under `cgca.new/`:
+
+1. Checkout code
+2. Run unit tests (`dotnet test` in Release)
+3. Build full solution (`dotnet build` in Release)
+4. Email build report
+
+### Production (`cgca.yml`)
+
+Triggers on push to `main` with changes under `cgca.new/`:
+
+1. Checkout code
+2. Run unit tests — deployment aborts if tests fail
+3. Generate timestamped build number
+4. Create backup of current production site (compressed archive)
+5. Stop IIS app pool (`CedarGroveChristianAcademy`)
+6. Publish to production (`dotnet publish -c Release`)
+7. Start IIS app pool
+8. Email deployment report
 
 All tests must pass before deployment proceeds, ensuring production stability.

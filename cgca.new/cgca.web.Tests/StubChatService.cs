@@ -1,5 +1,5 @@
-using cgca.web.Models;
-using cgca.web.Services;
+using cgca.web.client.Models;
+using cgca.web.client.Services;
 
 namespace cgca.web.Tests;
 

@@ -1,7 +1,7 @@
 using Bunit;
 using cgca.web;
 using cgca.web.Pages;
-using cgca.web.Services;
+using cgca.web.client.Services;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -91,14 +91,36 @@ public class RoutingTests : BunitContext
     }
 
     [Fact]
-    public void App_RendersWithRouter()
+    public void Router_ProgramsRoute_PageRendersCorrectly()
     {
         // Arrange & Act
-        var cut = Render<App>();
+        var cut = Render<Programs>();
 
         // Assert
-        cut.Should().NotBeNull("App should render with router");
-        cut.Markup.Should().NotBeEmpty("App should have content");
+        cut.Should().NotBeNull("Programs page component should render");
+        cut.Markup.Should().NotBeEmpty("Programs page should have content");
+    }
+
+    [Fact]
+    public void Router_AdmissionsRoute_PageRendersCorrectly()
+    {
+        // Arrange & Act
+        var cut = Render<Admissions>();
+
+        // Assert
+        cut.Should().NotBeNull("Admissions page component should render");
+        cut.Markup.Should().NotBeEmpty("Admissions page should have content");
+    }
+
+    [Fact]
+    public void Routes_RendersWithRouter()
+    {
+        // Arrange & Act
+        var cut = Render<Routes>();
+
+        // Assert
+        cut.Should().NotBeNull("Routes should render with router");
+        cut.Markup.Should().NotBeEmpty("Routes should have content");
     }
 
     [Fact]
@@ -114,6 +136,8 @@ public class RoutingTests : BunitContext
         Action renderContact = () => Render<Contact>();
         Action renderCalendar = () => Render<Calendar>();
         Action renderPrivacy = () => Render<Privacy>();
+        Action renderPrograms = () => Render<Programs>();
+        Action renderAdmissions = () => Render<Admissions>();
 
         // Assert - None should throw exceptions
         renderHome.Should().NotThrow("Home route component should render");
@@ -122,5 +146,7 @@ public class RoutingTests : BunitContext
         renderContact.Should().NotThrow("Contact route component should render");
         renderCalendar.Should().NotThrow("Calendar route component should render");
         renderPrivacy.Should().NotThrow("Privacy route component should render");
+        renderPrograms.Should().NotThrow("Programs route component should render");
+        renderAdmissions.Should().NotThrow("Admissions route component should render");
     }
 }
