@@ -61,4 +61,4 @@
   </div>
 </footer>
 
-<ChatWidget @rendermode="@RenderMode.InteractiveWebAssembly" />
+<ChatWidget @rendermode="@(new InteractiveWebAssemblyRenderMode(prerender: false))" />
