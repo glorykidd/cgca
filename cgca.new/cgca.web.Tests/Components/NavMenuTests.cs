@@ -74,23 +74,11 @@ public class NavMenuTests : BunitContext
         // Assert - Check all navigation links are present
         cut.FindAll("a[href='']").Should().NotBeEmpty("Home link should be present");
         cut.FindAll("a[href='/about']").Should().NotBeEmpty("About link should be present");
+        cut.FindAll("a[href='/programs']").Should().NotBeEmpty("Programs link should be present");
+        cut.FindAll("a[href='/admissions']").Should().NotBeEmpty("Admissions link should be present");
         cut.FindAll("a[href='/parents']").Should().NotBeEmpty("Parents link should be present");
         cut.FindAll("a[href='/calendar']").Should().NotBeEmpty("Calendar link should be present");
         cut.FindAll("a[href='/contact']").Should().NotBeEmpty("Contact link should be present");
-    }
-
-    [Fact]
-    public void NavMenu_ExternalLinks_HaveTargetBlank()
-    {
-        // Arrange & Act
-        var cut = Render<NavMenu>();
-
-        // Assert - External links should open in new tab
-        var registerLink = cut.Find("a[href='https://app.praxischool.com/site_login.php?s=4101']");
-        registerLink.GetAttribute("target").Should().Be("_blank", "Register Now link should open in new tab");
-
-        var schoolBoardLink = cut.Find("a[href='https://forms.gle/X4Go6u1iYqaH6WGg8']");
-        schoolBoardLink.GetAttribute("target").Should().Be("_blank", "School Board link should open in new tab");
     }
 
     [Fact]

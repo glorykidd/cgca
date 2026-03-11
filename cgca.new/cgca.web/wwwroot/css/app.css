@@ -235,3 +235,103 @@ code {
     border: 0;
     overflow: hidden;
 }
+
+/* --- Hero banner --- */
+.hero-banner {
+    padding: 2.5rem 0 1.5rem;
+}
+
+.hero-headline {
+    font-size: 2.75rem;
+    font-weight: 800;
+    color: var(--cgca-primary-blue);
+    line-height: 1.15;
+    margin-bottom: 1rem;
+}
+
+.hero-subtext {
+    font-size: 1.2em;
+    color: #444;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.hero-cta-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+@media (max-width: 768px) {
+    .hero-headline {
+        font-size: 2rem;
+    }
+    .hero-cta-group {
+        justify-content: center;
+    }
+}
+
+/* --- Quick facts strip --- */
+.quick-facts {
+    padding: 1.5rem 0;
+}
+
+.fact-item {
+    padding: 1.25rem 0.5rem;
+}
+
+.fact-icon {
+    color: var(--cgca-primary-blue);
+    margin-bottom: 0.5rem;
+}
+
+.fact-number {
+    font-size: 1.35em;
+    font-weight: 700;
+    color: var(--cgca-primary-blue);
+    margin-bottom: 0.15rem;
+}
+
+.fact-label {
+    font-size: 0.95em;
+    color: #666;
+    margin-bottom: 0;
+}
+
+/* --- ABC letters --- */
+.abc-letter {
+    font-size: 4rem;
+    font-weight: 900;
+    color: var(--cgca-primary-blue);
+    line-height: 1;
+    margin-bottom: 0.25rem;
+}
+
+/* --- Enrollment steps --- */
+.enroll-step {
+    padding: 1.5rem 1rem;
+}
+
+.step-number {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--cgca-gradient);
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+}
+
+/* --- Footer improvements --- */
+.site-footer a {
+    color: whitesmoke;
+}
+
+.site-footer a:hover {
+    color: #aadcf7;
+}
