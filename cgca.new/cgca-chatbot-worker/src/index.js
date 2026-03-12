@@ -182,18 +182,26 @@ export default {
       return new Response(null, { status: 204, headers: cors });
     }
 
-    if (request.method !== "POST") {
-      return jsonResponse({ error: "Method not allowed" }, 405, cors);
-    }
+    try {
+      if (request.method !== "POST") {
+        return jsonResponse({ error: "Method not allowed" }, 405, cors);
+      }
 
-    if (url.pathname === "/api/chat") {
-      return handleChat(request, env);
-    }
+      if (url.pathname === "/api/chat") {
+        return await handleChat(request, env);
+      }
 
-    if (url.pathname === "/api/leads") {
-      return handleLeads(request, env);
-    }
+      if (url.pathname === "/api/leads") {
+        return await handleLeads(request, env);
+      }
 
-    return jsonResponse({ error: "Not found" }, 404, cors);
+      return jsonResponse({ error: "Not found" }, 404, cors);
+    } catch (err) {
+      return jsonResponse(
+        { reply: "Sorry, I'm having trouble right now. Please contact us directly at contactus@cedargrovechristianacademy.org." },
+        500,
+        cors
+      );
+    }
   },
 };
