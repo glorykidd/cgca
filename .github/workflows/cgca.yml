@@ -19,9 +19,8 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Single deploy job since we're just deploying
-  deploy:
-    name: Deploy CGCA Web
+  deploy-website:
+    name: Deploy CGCA Website
     runs-on: [ self-hosted ]
     steps:
       - name: Checkout new code
@@ -84,6 +83,20 @@ jobs:
         run: |
           Import-Module WebAdministration
           Start-WebAppPool -Name "CedarGroveChristianAcademy"
+      - name: Email Notification
+        run: |
+          cd  D:/it-tools/mailer
+          ./SesMailer.exe --to  "David Nuckolls <david.nuckolls@glorykidd.com>" --subject "CGCA Release ${{ steps.buildid.outputs.formattedTime }}" --body C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt --format text  --from-display-name "CGCA Website"
+
+  deploy-chatbot:
+    name: Deploy Chatbot Worker
+    needs: deploy-website
+    runs-on: [ self-hosted ]
+    steps:
+      - name: Checkout new code
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
       - name: Deploy chatbot worker to Cloudflare
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -91,7 +104,3 @@ jobs:
           cd cgca.new/cgca-chatbot-worker
           npm ci
           npx wrangler deploy
-      - name: Email Notification
-        run: |
-          cd  D:/it-tools/mailer
-          ./SesMailer.exe --to  "David Nuckolls <david.nuckolls@glorykidd.com>" --subject "CGCA Release ${{ steps.buildid.outputs.formattedTime }}" --body C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt --format text  --from-display-name "CGCA Website" 
