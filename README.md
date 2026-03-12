@@ -14,19 +14,20 @@ The CGCA website is a server-rendered Blazor application built on .NET 10.0 with
 | CSS Framework | Bootstrap 5.3.7 (CDN) |
 | Icons | Bootstrap Icons 1.13.1 (CDN) |
 | Analytics | Google Analytics 4 with custom event tracking |
-| AI Chatbot | Cloudflare Worker backend, Blazor WASM interactive widget |
+| AI Chatbot | Cloudflare Worker backend (Claude Haiku), Blazor WASM interactive widget |
 | Testing | xUnit, bUnit 2.5.3, FluentAssertions 8.8.0 |
-| CI/CD | GitHub Actions — self-hosted Windows runner, IIS deployment |
+| CI/CD | GitHub Actions — self-hosted Windows runner, IIS + Cloudflare Workers deployment |
 | License | MIT |
 
 Pages are statically rendered on the server (SSR) for fast load times and full SEO crawlability. The AI chatbot runs as an Interactive WebAssembly island — the only component requiring client-side interactivity. There is no database; all content is static HTML within Razor components, supplemented by embedded third-party services.
 
 ## Architecture Overview
 
-The application uses a two-project architecture under `cgca.new/`:
+The application uses a three-project architecture under `cgca.new/`:
 
 - **`cgca.web`** — ASP.NET Core server that statically renders all pages and serves the WASM runtime for interactive components
 - **`cgca.web.client`** — Blazor WebAssembly project containing the interactive chatbot widget and its supporting services/models
+- **`cgca-chatbot-worker`** — Cloudflare Worker that proxies chat requests to the Anthropic Claude API and handles lead capture
 
 ```
 cgca.new/
@@ -69,6 +70,16 @@ cgca.new/
 │   │   └── ChatService.cs
 │   └── wwwroot/
 │       └── appsettings.json          # ChatApiBaseUrl configuration
+├── cgca-chatbot-worker/              # Cloudflare Worker (chatbot backend)
+│   ├── src/
+│   │   ├── index.js                  # Main Worker — chat + leads route handlers, CORS
+│   │   ├── systemPrompt.js           # CGCA system prompt for Claude
+│   │   ├── rateLimit.js              # IP cooldown + session message cap via KV
+│   │   └── cache.js                  # Common question response caching via KV
+│   ├── wrangler.toml                 # Cloudflare Worker config, KV namespace bindings
+│   ├── package.json
+│   ├── package-lock.json
+│   └── README.md                     # Worker-specific setup instructions
 └── cgca.web.Tests/                   # Unit test project
     ├── StubChatService.cs            # Mock chat service for testing
     ├── Components/
@@ -86,6 +97,7 @@ cgca.new/
 - **Static SSR** — All pages are rendered on the server and delivered as complete HTML. This provides instant page loads and allows search engines to crawl all content without executing JavaScript.
 - **Interactive WASM Island** — The chatbot widget (`ChatWidget.razor`) is the sole interactive component, rendered with `InteractiveWebAssemblyRenderMode(prerender: false)` to run client-side only.
 - **Native Bootstrap modals** — Modals on About and Parents pages use Bootstrap 5 `data-bs-toggle`/`data-bs-target` attributes rather than Blazor interactive components, so they work without a client-side runtime.
+- **Scoped CSS** — Both `cgca.web.styles.css` and `cgca.web.client.styles.css` must be loaded in `App.razor` for component styles to apply correctly.
 
 ### SEO Features
 
@@ -120,11 +132,37 @@ cgca.new/
 The chatbot is an interactive Blazor WASM component that communicates with a Cloudflare Worker backend. It provides:
 
 - Answers to common questions about admissions, tuition, school hours, and programs
-- Lead capture form (name + email) after 2 user messages, submitted to a Google Sheets integration
-- Session-based conversation with message cap
+- Lead capture form (name + email) after 2 user messages, forwarded to Google Sheets via Apps Script webhook
+- Session-based conversation with a 15-message cap per session
+- IP rate limiting (1 request per 2 seconds)
+- Response caching for common questions (24-hour TTL)
 - GA4 event tracking for opens and lead captures
+- Graceful error handling with CORS headers always returned
 
-Configuration: Set `ChatApiBaseUrl` in `cgca.web.client/wwwroot/appsettings.json` to point to the Cloudflare Worker endpoint.
+### Chatbot Architecture
+
+```
+Browser (WASM)          Cloudflare Worker              Anthropic API
+ChatWidget.razor  →  POST /api/chat  →  Claude Haiku (claude-haiku-4-5-20251001)
+                     POST /api/leads →  Google Sheets webhook (fallback: KV storage)
+```
+
+### Configuration
+
+- **Worker URL**: Set `ChatApiBaseUrl` in `cgca.web.client/wwwroot/appsettings.json`
+- **Worker secrets** (stored via `wrangler secret put`):
+  - `ANTHROPIC_API_KEY` — Anthropic API key for Claude
+  - `GOOGLE_SHEETS_WEBHOOK_URL` — Apps Script webhook for lead capture
+- **KV namespaces**: `CHAT_CACHE` (response cache + lead fallback), `RATE_LIMIT` (IP + session counters)
+- **Cost controls**: Claude Haiku model, 350 max tokens, 6-message history trim, $30/month spend cap in Anthropic console
+
+### CORS
+
+The Worker allows requests from:
+- `https://cedargrovechristianacademy.org`
+- `https://www.cedargrovechristianacademy.org`
+- `http://localhost:5297` (dev)
+- `https://localhost:7183` (dev)
 
 ## Unit Tests
 
@@ -177,6 +215,11 @@ dotnet test cgca.sln
 # Start the dev server
 cd cgca.web
 dotnet run
+
+# Deploy chatbot worker manually
+cd cgca-chatbot-worker
+npm install
+npx wrangler deploy
 ```
 
 The dev server starts on **http://localhost:5297** and **https://localhost:7183**.
@@ -190,22 +233,23 @@ Create feature branches off `develop` and open PRs back into `develop`.
 
 ## CI/CD & Deployment
 
-Two GitHub Actions workflows (`.github/workflows/`) automate builds and deployments on a self-hosted Windows runner with IIS:
+Two GitHub Actions workflows (`.github/workflows/`) automate builds and deployments on a self-hosted Windows runner:
 
 ### Develop Branch (`cgca-develop.yml`)
 
 Triggers on push to `develop` with changes under `cgca.new/`:
 
-1. Checkout code
+1. Checkout code (full history)
 2. Run unit tests (`dotnet test` in Release)
 3. Build full solution (`dotnet build` in Release)
 4. Email build report
 
 ### Production (`cgca.yml`)
 
-Triggers on push to `main` with changes under `cgca.new/`:
+Triggers on push to `main` with changes under `cgca.new/`. Two jobs run sequentially:
 
-1. Checkout code
+**Job 1: `deploy-website`**
+1. Checkout code (full history for commit reporting)
 2. Run unit tests — deployment aborts if tests fail
 3. Generate timestamped build number
 4. Create backup of current production site (compressed archive)
@@ -214,4 +258,15 @@ Triggers on push to `main` with changes under `cgca.new/`:
 7. Start IIS app pool
 8. Email deployment report
 
-All tests must pass before deployment proceeds, ensuring production stability.
+**Job 2: `deploy-chatbot`** (runs only after website succeeds)
+1. Checkout code
+2. Install worker dependencies (`npm ci`)
+3. Deploy Cloudflare Worker (`npx wrangler deploy`)
+
+### Required Secrets
+
+| Secret | Location | Purpose |
+|---|---|---|
+| `CLOUDFLARE_API_TOKEN` | GitHub Actions | Authenticates `wrangler deploy` for the chatbot worker |
+| `ANTHROPIC_API_KEY` | Cloudflare Worker | API key for Claude Haiku chat completions |
+| `GOOGLE_SHEETS_WEBHOOK_URL` | Cloudflare Worker | Apps Script webhook for lead capture |

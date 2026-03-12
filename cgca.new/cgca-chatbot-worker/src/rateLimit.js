@@ -36,6 +36,6 @@ export async function checkIpRate(env, ip) {
       return { allowed: false };
     }
   }
-  await env.RATE_LIMIT.put(key, String(Date.now()), { expirationTtl: 10 });
+  await env.RATE_LIMIT.put(key, String(Date.now()), { expirationTtl: 60 });
   return { allowed: true };
 }
