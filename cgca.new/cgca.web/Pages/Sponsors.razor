@@ -133,12 +133,12 @@
             @if (!string.IsNullOrEmpty(sponsor.Website))
             {
               <a href="@sponsor.Website" target="_blank" rel="noopener noreferrer">
-                <img src="images/sponsors/@sponsor.Logo" alt="@sponsor.Name" class="sponsor-logo sponsor-logo-gold" loading="lazy" />
+                <img src="/images/sponsors/@sponsor.Logo" alt="@sponsor.Name" class="sponsor-logo sponsor-logo-gold" loading="lazy" />
               </a>
             }
             else
             {
-              <img src="images/sponsors/@sponsor.Logo" alt="@sponsor.Name" class="sponsor-logo sponsor-logo-gold" loading="lazy" />
+              <img src="/images/sponsors/@sponsor.Logo" alt="@sponsor.Name" class="sponsor-logo sponsor-logo-gold" loading="lazy" />
             }
             <p class="sponsor-name">@sponsor.Name</p>
           </div>
@@ -162,12 +162,12 @@
             @if (!string.IsNullOrEmpty(sponsor.Website))
             {
               <a href="@sponsor.Website" target="_blank" rel="noopener noreferrer">
-                <img src="images/sponsors/@sponsor.Logo" alt="@sponsor.Name" class="sponsor-logo sponsor-logo-silver" loading="lazy" />
+                <img src="/images/sponsors/@sponsor.Logo" alt="@sponsor.Name" class="sponsor-logo sponsor-logo-silver" loading="lazy" />
               </a>
             }
             else
             {
-              <img src="images/sponsors/@sponsor.Logo" alt="@sponsor.Name" class="sponsor-logo sponsor-logo-silver" loading="lazy" />
+              <img src="/images/sponsors/@sponsor.Logo" alt="@sponsor.Name" class="sponsor-logo sponsor-logo-silver" loading="lazy" />
             }
             <p class="sponsor-name">@sponsor.Name</p>
           </div>
@@ -191,12 +191,12 @@
             @if (!string.IsNullOrEmpty(sponsor.Website))
             {
               <a href="@sponsor.Website" target="_blank" rel="noopener noreferrer">
-                <img src="images/sponsors/@sponsor.Logo" alt="@sponsor.Name" class="sponsor-logo sponsor-logo-bronze" loading="lazy" />
+                <img src="/images/sponsors/@sponsor.Logo" alt="@sponsor.Name" class="sponsor-logo sponsor-logo-bronze" loading="lazy" />
               </a>
             }
             else
             {
-              <img src="images/sponsors/@sponsor.Logo" alt="@sponsor.Name" class="sponsor-logo sponsor-logo-bronze" loading="lazy" />
+              <img src="/images/sponsors/@sponsor.Logo" alt="@sponsor.Name" class="sponsor-logo sponsor-logo-bronze" loading="lazy" />
             }
             <p class="sponsor-name">@sponsor.Name</p>
           </div>
@@ -256,7 +256,7 @@
         // new("Joe's Diner", "joes-diner.png", "Bronze", "https://www.joesdiner.com"),
     };
 
-    private IEnumerable<SponsorInfo> GoldSponsors => SponsorList.Where(s => s.Tier == "Gold");
-    private IEnumerable<SponsorInfo> SilverSponsors => SponsorList.Where(s => s.Tier == "Silver");
-    private IEnumerable<SponsorInfo> BronzeSponsors => SponsorList.Where(s => s.Tier == "Bronze");
+    private IEnumerable<SponsorInfo> GoldSponsors => SponsorList.Where(s => string.Equals(s.Tier, "Gold", StringComparison.OrdinalIgnoreCase));
+    private IEnumerable<SponsorInfo> SilverSponsors => SponsorList.Where(s => string.Equals(s.Tier, "Silver", StringComparison.OrdinalIgnoreCase));
+    private IEnumerable<SponsorInfo> BronzeSponsors => SponsorList.Where(s => string.Equals(s.Tier, "Bronze", StringComparison.OrdinalIgnoreCase));
 }
