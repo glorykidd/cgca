@@ -1,0 +1,208 @@
+/* Hero */
+.sponsor-hero {
+    padding: 40px 20px 20px;
+}
+
+.sponsor-hero-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.sponsor-hero-subtitle {
+    font-size: 1.2rem;
+    color: #666;
+    margin-top: 10px;
+}
+
+/* Tier Cards */
+.tier-card {
+    border: 2px solid #ddd;
+    border-radius: 12px;
+    padding: 30px 20px;
+    text-align: center;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tier-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+.tier-gold {
+    border-color: #DAA520;
+}
+
+.tier-silver {
+    border-color: #A8A8A8;
+}
+
+.tier-bronze {
+    border-color: #CD7F32;
+}
+
+.tier-badge {
+    font-size: 1.4rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+}
+
+.tier-gold .tier-badge {
+    color: #DAA520;
+}
+
+.tier-silver .tier-badge {
+    color: #808080;
+}
+
+.tier-bronze .tier-badge {
+    color: #CD7F32;
+}
+
+.tier-amount {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.tier-benefits {
+    text-align: left;
+    padding-left: 20px;
+    margin-bottom: 24px;
+    flex-grow: 1;
+}
+
+.tier-benefits li {
+    margin-bottom: 8px;
+    color: #555;
+}
+
+.btn-sponsor {
+    color: #fff;
+    border-radius: 25px;
+    padding: 10px 24px;
+    font-weight: 600;
+    text-decoration: none;
+    margin-top: auto;
+}
+
+.btn-gold {
+    background-color: #DAA520;
+    border-color: #DAA520;
+}
+
+.btn-gold:hover {
+    background-color: #c4941a;
+    border-color: #c4941a;
+    color: #fff;
+}
+
+.btn-silver {
+    background-color: #808080;
+    border-color: #808080;
+}
+
+.btn-silver:hover {
+    background-color: #6a6a6a;
+    border-color: #6a6a6a;
+    color: #fff;
+}
+
+.btn-bronze {
+    background-color: #CD7F32;
+    border-color: #CD7F32;
+}
+
+.btn-bronze:hover {
+    background-color: #b56e2a;
+    border-color: #b56e2a;
+    color: #fff;
+}
+
+/* Sponsor Tier Headings */
+.sponsor-tier-heading {
+    font-weight: bold;
+    padding-bottom: 8px;
+    border-bottom: 3px solid #ddd;
+    display: inline-block;
+}
+
+.sponsor-tier-gold {
+    color: #DAA520;
+    border-bottom-color: #DAA520;
+}
+
+.sponsor-tier-silver {
+    color: #808080;
+    border-bottom-color: #A8A8A8;
+}
+
+.sponsor-tier-bronze {
+    color: #CD7F32;
+    border-bottom-color: #CD7F32;
+}
+
+/* Sponsor Cards */
+.sponsor-card {
+    text-align: center;
+    padding: 16px;
+}
+
+.sponsor-logo {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+    margin-bottom: 10px;
+}
+
+.sponsor-logo-gold {
+    max-height: 120px;
+}
+
+.sponsor-logo-silver {
+    max-height: 100px;
+}
+
+.sponsor-logo-bronze {
+    max-height: 80px;
+}
+
+.sponsor-name {
+    font-weight: 600;
+    color: #333;
+    margin-top: 4px;
+    font-size: 0.95rem;
+}
+
+.sponsor-placeholder {
+    font-size: 1.1rem;
+    color: #888;
+    font-style: italic;
+    padding: 30px 0;
+}
+
+/* CTA Footer */
+.sponsor-cta {
+    padding: 30px 20px;
+}
+
+.sponsor-cta h3 {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.sponsor-contact-info {
+    margin-top: 20px;
+    color: #666;
+}
+
+.sponsor-contact-info a {
+    color: #198754;
+}

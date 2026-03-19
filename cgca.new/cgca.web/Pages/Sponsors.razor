@@ -1,0 +1,264 @@
+@page "/sponsors"
+
+<PageTitle>Partner With Us | Sponsorship Opportunities | Cedar Grove Christian Academy</PageTitle>
+<HeadContent>
+  <meta name="description" content="Partner with Cedar Grove Christian Academy as an annual sponsor. Support Christ-centered education in Bullitt County, Kentucky and invest in the next generation of Christian leaders." />
+  <meta property="og:title" content="Partner With Us | Cedar Grove Christian Academy" />
+  <meta property="og:description" content="Become a sponsor and help keep Christ-centered education accessible for families in Bullitt County." />
+  <meta property="og:url" content="https://www.cedargrovechristianacademy.org/sponsors" />
+  <link rel="canonical" href="https://www.cedargrovechristianacademy.org/sponsors" />
+</HeadContent>
+
+<!-- Hero Section -->
+<section aria-label="Sponsorship hero">
+  <div class="row">
+    <div class="col-12 text-center sponsor-hero">
+      <h1 class="sponsor-hero-title">Partner with Cedar Grove Christian Academy</h1>
+      <p class="sponsor-hero-subtitle">Invest in the future of Bullitt County's children</p>
+    </div>
+  </div>
+</section>
+
+<div class="row">
+  <div class="col-12">&nbsp;</div>
+</div>
+
+<!-- Why Partner Section -->
+<section aria-label="Why partner with us">
+  <div class="row">
+    <div class="col-sm-12 col-md-8 offset-md-2">
+      <Card TextAlignment="Alignment.Start" Style="border: 0px;">
+        <CardBody>
+          <CardText>
+            <p class="text-justify">Cedar Grove Christian Academy is a ministry of Cedar Grove Baptist Church,
+              located right here in Bullitt County, Kentucky. Our mission is to faithfully proclaim the gospel of
+              Jesus Christ, to equip and train students to think and live Biblically, and to prepare the next
+              generation of Christian leaders.</p>
+            <p class="text-justify">As we continue to grow and serve more families in the 2026&ndash;27 school year,
+              we are looking for local partners who share our commitment to youth development and the strength
+              of our community. Your support helps us keep Christian education accessible and ensures that every
+              student who walks through our doors receives an excellent academic foundation paired with a
+              Christ-centered experience.</p>
+          </CardText>
+        </CardBody>
+      </Card>
+    </div>
+  </div>
+</section>
+
+<div class="row">
+  <div class="col-12">&nbsp;</div>
+</div>
+
+<!-- Sponsorship Tiers Section -->
+<section aria-label="Sponsorship levels">
+  <div class="row">
+    <div class="col-12">
+      <div class="section-header">
+        <p class="section-header-title">Sponsorship Levels</p>
+        <p class="section-header-subtitle">Every level of partnership makes a real difference</p>
+      </div>
+    </div>
+  </div>
+  <div class="row justify-content-center">
+    <div class="col-sm-12 col-md-4 mb-4">
+      <div class="tier-card tier-gold">
+        <div class="tier-badge">Gold</div>
+        <div class="tier-amount">$1,500</div>
+        <ul class="tier-benefits">
+          <li>Mentions on our website and social media</li>
+          <li>Logo placement on the school website</li>
+          <li>Name on our Wall of Sponsors</li>
+          <li>Larger featured logo placement on the website</li>
+          <li>Signage on the playground fence</li>
+        </ul>
+        <a href="mailto:@ContactEmail?subject=Gold%20Sponsorship%20Inquiry"
+           class="btn btn-sponsor btn-gold">Become a Gold Sponsor</a>
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-4 mb-4">
+      <div class="tier-card tier-silver">
+        <div class="tier-badge">Silver</div>
+        <div class="tier-amount">$750</div>
+        <ul class="tier-benefits">
+          <li>Mentions on our website and social media</li>
+          <li>Logo placement on the school website</li>
+          <li>Name on our Wall of Sponsors</li>
+        </ul>
+        <a href="mailto:@ContactEmail?subject=Silver%20Sponsorship%20Inquiry"
+           class="btn btn-sponsor btn-silver">Become a Silver Sponsor</a>
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-4 mb-4">
+      <div class="tier-card tier-bronze">
+        <div class="tier-badge">Bronze</div>
+        <div class="tier-amount">$250</div>
+        <ul class="tier-benefits">
+          <li>Mentions on our website and social media</li>
+        </ul>
+        <a href="mailto:contactus@cedargrovechristianacademy.org?subject=Bronze%20Sponsorship%20Inquiry"
+           class="btn btn-sponsor btn-bronze">Become a Bronze Sponsor</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="row">
+  <div class="col-12">&nbsp;</div>
+</div>
+
+<!-- Our Sponsors Section -->
+<section aria-label="Our sponsors">
+  <div class="row">
+    <div class="col-12">
+      <div class="section-header">
+        <p class="section-header-title">Our Sponsors</p>
+        <p class="section-header-subtitle">Thank you to our generous partners</p>
+      </div>
+    </div>
+  </div>
+
+  @if (GoldSponsors.Any())
+  {
+    <div class="row mb-3">
+      <div class="col-12">
+        <h4 class="sponsor-tier-heading sponsor-tier-gold">Gold Sponsors</h4>
+      </div>
+    </div>
+    <div class="row justify-content-center mb-4">
+      @foreach (var sponsor in GoldSponsors)
+      {
+        <div class="col-6 col-md-4 col-lg-3 mb-3">
+          <div class="sponsor-card">
+            @if (!string.IsNullOrEmpty(sponsor.Website))
+            {
+              <a href="@sponsor.Website" target="_blank" rel="noopener noreferrer">
+                <img src="/images/sponsors/@sponsor.Logo" alt="@sponsor.Name" class="sponsor-logo sponsor-logo-gold" loading="lazy" />
+              </a>
+            }
+            else
+            {
+              <img src="/images/sponsors/@sponsor.Logo" alt="@sponsor.Name" class="sponsor-logo sponsor-logo-gold" loading="lazy" />
+            }
+            <p class="sponsor-name">@sponsor.Name</p>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  @if (SilverSponsors.Any())
+  {
+    <div class="row mb-3">
+      <div class="col-12">
+        <h4 class="sponsor-tier-heading sponsor-tier-silver">Silver Sponsors</h4>
+      </div>
+    </div>
+    <div class="row justify-content-center mb-4">
+      @foreach (var sponsor in SilverSponsors)
+      {
+        <div class="col-6 col-md-4 col-lg-3 mb-3">
+          <div class="sponsor-card">
+            @if (!string.IsNullOrEmpty(sponsor.Website))
+            {
+              <a href="@sponsor.Website" target="_blank" rel="noopener noreferrer">
+                <img src="/images/sponsors/@sponsor.Logo" alt="@sponsor.Name" class="sponsor-logo sponsor-logo-silver" loading="lazy" />
+              </a>
+            }
+            else
+            {
+              <img src="/images/sponsors/@sponsor.Logo" alt="@sponsor.Name" class="sponsor-logo sponsor-logo-silver" loading="lazy" />
+            }
+            <p class="sponsor-name">@sponsor.Name</p>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  @if (BronzeSponsors.Any())
+  {
+    <div class="row mb-3">
+      <div class="col-12">
+        <h4 class="sponsor-tier-heading sponsor-tier-bronze">Bronze Sponsors</h4>
+      </div>
+    </div>
+    <div class="row justify-content-center mb-4">
+      @foreach (var sponsor in BronzeSponsors)
+      {
+        <div class="col-6 col-md-4 col-lg-3 mb-3">
+          <div class="sponsor-card">
+            @if (!string.IsNullOrEmpty(sponsor.Website))
+            {
+              <a href="@sponsor.Website" target="_blank" rel="noopener noreferrer">
+                <img src="/images/sponsors/@sponsor.Logo" alt="@sponsor.Name" class="sponsor-logo sponsor-logo-bronze" loading="lazy" />
+              </a>
+            }
+            else
+            {
+              <img src="/images/sponsors/@sponsor.Logo" alt="@sponsor.Name" class="sponsor-logo sponsor-logo-bronze" loading="lazy" />
+            }
+            <p class="sponsor-name">@sponsor.Name</p>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  @if (!GoldSponsors.Any() && !SilverSponsors.Any() && !BronzeSponsors.Any())
+  {
+    <div class="row">
+      <div class="col-12 text-center">
+        <p class="sponsor-placeholder">Be our first sponsor! Partner with CGCA and make a lasting impact.</p>
+      </div>
+    </div>
+  }
+</section>
+
+<div class="row">
+  <div class="col-12">&nbsp;</div>
+</div>
+
+<!-- CTA Footer Section -->
+<section aria-label="Get in touch">
+  <div class="row">
+    <div class="col-12 text-center sponsor-cta">
+      <h3>Ready to Make a Difference?</h3>
+      <p>We would be honored to have your business join us in making this school year transformative.</p>
+      <a href="mailto:@ContactEmail?subject=Sponsorship%20Inquiry"
+         class="btn btn-success btn-lg btn-rounded">
+        <Icon Name="IconName.HeartFill" />
+        &nbsp;&nbsp;Become a Sponsor&nbsp;&nbsp;
+        <Icon Name="IconName.HeartFill" />
+      </a>
+      <div class="sponsor-contact-info">
+        <p>Tray Earnhart, Head of School</p>
+        <p>(502) 543-4101 |
+          <a href="mailto:@ContactEmail">@ContactEmail</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="row">
+  <div class="col-12">&nbsp;</div>
+</div>
+
+@code {
+    private const string ContactEmail = "contactus@cedargrovechristianacademy.org";
+
+    private record SponsorInfo(string Name, string Logo, string Tier, string? Website = null);
+
+    private List<SponsorInfo> SponsorList { get; } = new()
+    {
+        // Add sponsors here as they come in. Example:
+        // new("Acme Corp", "acme-corp.png", "Gold", "https://www.acmecorp.com"),
+        // new("Local Hardware", "local-hardware.png", "Silver"),
+        // new("Joe's Diner", "joes-diner.png", "Bronze", "https://www.joesdiner.com"),
+    };
+
+    private IEnumerable<SponsorInfo> GoldSponsors => SponsorList.Where(s => string.Equals(s.Tier, "Gold", StringComparison.OrdinalIgnoreCase));
+    private IEnumerable<SponsorInfo> SilverSponsors => SponsorList.Where(s => string.Equals(s.Tier, "Silver", StringComparison.OrdinalIgnoreCase));
+    private IEnumerable<SponsorInfo> BronzeSponsors => SponsorList.Where(s => string.Equals(s.Tier, "Bronze", StringComparison.OrdinalIgnoreCase));
+}
