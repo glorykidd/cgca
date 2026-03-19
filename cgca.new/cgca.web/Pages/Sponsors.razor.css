@@ -15,6 +15,11 @@
     margin-top: 10px;
 }
 
+/* Why Partner Text */
+.text-justify {
+    font-size: 1.2em;
+}
+
 /* Tier Cards */
 .tier-card {
     border: 2px solid #ddd;
