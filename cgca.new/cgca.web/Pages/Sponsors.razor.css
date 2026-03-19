@@ -15,6 +15,12 @@
     margin-top: 10px;
 }
 
+/* Why Partner Text */
+.sponsor-text {
+    font-size: 1.2em;
+    text-align: justify;
+}
+
 /* Tier Cards */
 .tier-card {
     border: 2px solid #ddd;
