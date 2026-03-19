@@ -72,7 +72,7 @@
           <li>Larger featured logo placement on the website</li>
           <li>Signage on the playground fence</li>
         </ul>
-        <a href="mailto:contactus@cedargrovechristianacademy.org?subject=Gold%20Sponsorship%20Inquiry"
+        <a href="mailto:@ContactEmail?subject=Gold%20Sponsorship%20Inquiry"
            class="btn btn-sponsor btn-gold">Become a Gold Sponsor</a>
       </div>
     </div>
@@ -85,7 +85,7 @@
           <li>Logo placement on the school website</li>
           <li>Name on our Wall of Sponsors</li>
         </ul>
-        <a href="mailto:contactus@cedargrovechristianacademy.org?subject=Silver%20Sponsorship%20Inquiry"
+        <a href="mailto:@ContactEmail?subject=Silver%20Sponsorship%20Inquiry"
            class="btn btn-sponsor btn-silver">Become a Silver Sponsor</a>
       </div>
     </div>
@@ -225,7 +225,7 @@
     <div class="col-12 text-center sponsor-cta">
       <h3>Ready to Make a Difference?</h3>
       <p>We would be honored to have your business join us in making this school year transformative.</p>
-      <a href="mailto:contactus@cedargrovechristianacademy.org?subject=Sponsorship%20Inquiry"
+      <a href="mailto:@ContactEmail?subject=Sponsorship%20Inquiry"
          class="btn btn-success btn-lg btn-rounded">
         <Icon Name="IconName.HeartFill" />
         &nbsp;&nbsp;Become a Sponsor&nbsp;&nbsp;
@@ -234,7 +234,7 @@
       <div class="sponsor-contact-info">
         <p>Tray Earnhart, Head of School</p>
         <p>(502) 543-4101 |
-          <a href="mailto:contactus@cedargrovechristianacademy.org">contactus@cedargrovechristianacademy.org</a>
+          <a href="mailto:@ContactEmail">@ContactEmail</a>
         </p>
       </div>
     </div>
@@ -246,6 +246,8 @@
 </div>
 
 @code {
+    private const string ContactEmail = "contactus@cedargrovechristianacademy.org";
+
     private record SponsorInfo(string Name, string Logo, string Tier, string? Website = null);
 
     private List<SponsorInfo> SponsorList { get; } = new()
