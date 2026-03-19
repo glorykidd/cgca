@@ -16,8 +16,9 @@
 }
 
 /* Why Partner Text */
-.text-justify {
+.sponsor-text {
     font-size: 1.2em;
+    text-align: justify;
 }
 
 /* Tier Cards */
