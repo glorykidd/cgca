@@ -1,0 +1,177 @@
+@page "/admin/users/new"
+@page "/admin/users/{Id}/edit"
+@attribute [Authorize]
+@layout AdminLayout
+@rendermode InteractiveServer
+@using cgca.web.Models
+
+<PageTitle>@(IsNew ? "Create User" : "Edit User") - CGCA Admin</PageTitle>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">@(IsNew ? "Create User" : "Edit User")</h2>
+    <a href="/admin/users" class="btn btn-outline-secondary btn-sm">Back to Users</a>
+</div>
+
+@if (!IsNew && user == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger alert-dismissible">
+            @errorMessage
+            <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
+        </div>
+    }
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header"><h5 class="mb-0">User Information</h5></div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        @if (IsNew)
+                        {
+                            <input type="text" class="form-control" @bind="userName" />
+                        }
+                        else
+                        {
+                            <input type="text" class="form-control" value="@userName" disabled />
+                        }
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Display Name</label>
+                        <input type="text" class="form-control" @bind="displayName" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" @bind="email" />
+                    </div>
+                    <button class="btn btn-primary" @onclick="SaveUser">@(IsNew ? "Create User" : "Save Changes")</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header"><h5 class="mb-0">@(IsNew ? "Password" : "Reset Password")</h5></div>
+                <div class="card-body">
+                    @if (!IsNew)
+                    {
+                        <p class="text-muted small">Leave blank to keep the current password.</p>
+                    }
+                    @if (!string.IsNullOrEmpty(passwordMessage))
+                    {
+                        <div class="alert @(passwordSuccess ? "alert-success" : "alert-danger") alert-dismissible">
+                            @passwordMessage
+                            <button type="button" class="btn-close" @onclick="() => passwordMessage = null"></button>
+                        </div>
+                    }
+                    <div class="mb-3">
+                        <label class="form-label">@(IsNew ? "Password" : "New Password")</label>
+                        <input type="password" class="form-control" @bind="password" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Confirm Password</label>
+                        <input type="password" class="form-control" @bind="confirmPassword" />
+                    </div>
+                    @if (!IsNew)
+                    {
+                        <button class="btn btn-warning" @onclick="ResetPassword">Reset Password</button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public string? Id { get; set; }
+    [Inject] private UserManager<AdminUser> UserManager { get; set; } = default!;
+    [Inject] private NavigationManager Nav { get; set; } = default!;
+
+    private bool IsNew => string.IsNullOrEmpty(Id);
+    private AdminUser? user;
+    private string userName = "";
+    private string displayName = "";
+    private string email = "";
+    private string password = "";
+    private string confirmPassword = "";
+    private string? errorMessage;
+    private string? passwordMessage;
+    private bool passwordSuccess;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!IsNew)
+        {
+            user = await UserManager.FindByIdAsync(Id!);
+            if (user != null)
+            {
+                userName = user.UserName ?? "";
+                displayName = user.DisplayName ?? "";
+                email = user.Email ?? "";
+            }
+        }
+    }
+
+    private async Task SaveUser()
+    {
+        if (IsNew)
+        {
+            if (string.IsNullOrWhiteSpace(userName)) { errorMessage = "Username is required."; return; }
+            if (string.IsNullOrWhiteSpace(password)) { errorMessage = "Password is required for new users."; return; }
+            if (password != confirmPassword) { errorMessage = "Passwords do not match."; return; }
+
+            var newUser = new AdminUser
+            {
+                UserName = userName,
+                DisplayName = string.IsNullOrWhiteSpace(displayName) ? null : displayName,
+                Email = email,
+                EmailConfirmed = true
+            };
+
+            var result = await UserManager.CreateAsync(newUser, password);
+            if (result.Succeeded)
+                Nav.NavigateTo("/admin/users");
+            else
+                errorMessage = string.Join(" ", result.Errors.Select(e => e.Description));
+        }
+        else
+        {
+            if (user == null) return;
+            user.DisplayName = string.IsNullOrWhiteSpace(displayName) ? null : displayName;
+            user.Email = email;
+            var result = await UserManager.UpdateAsync(user);
+            if (result.Succeeded)
+                Nav.NavigateTo("/admin/users");
+            else
+                errorMessage = string.Join(" ", result.Errors.Select(e => e.Description));
+        }
+    }
+
+    private async Task ResetPassword()
+    {
+        if (user == null) return;
+        if (string.IsNullOrWhiteSpace(password)) { passwordMessage = "Please enter a new password."; passwordSuccess = false; return; }
+        if (password != confirmPassword) { passwordMessage = "Passwords do not match."; passwordSuccess = false; return; }
+
+        var token = await UserManager.GeneratePasswordResetTokenAsync(user);
+        var result = await UserManager.ResetPasswordAsync(user, token, password);
+        if (result.Succeeded)
+        {
+            passwordMessage = "Password has been reset.";
+            passwordSuccess = true;
+            password = "";
+            confirmPassword = "";
+        }
+        else
+        {
+            passwordMessage = string.Join(" ", result.Errors.Select(e => e.Description));
+            passwordSuccess = false;
+        }
+    }
+}

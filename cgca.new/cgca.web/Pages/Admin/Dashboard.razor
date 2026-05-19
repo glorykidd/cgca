@@ -1,0 +1,156 @@
+@page "/admin"
+@attribute [Authorize]
+@layout AdminLayout
+@rendermode InteractiveServer
+@using cgca.web.Services
+
+<PageTitle>Dashboard - CGCA Admin</PageTitle>
+
+<h2 class="mb-4">Dashboard</h2>
+
+@if (loaded)
+{
+    <div class="row g-3 mb-4">
+        <div class="col-sm-6 col-lg-3">
+            <div class="card text-center admin-stat-card">
+                <div class="card-body">
+                    <div class="admin-stat-number">@totalContacts</div>
+                    <div class="text-muted">Contact Messages</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card text-center admin-stat-card">
+                <div class="card-body">
+                    <div class="admin-stat-number text-danger">@unreadContacts</div>
+                    <div class="text-muted">Unread Contact</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card text-center admin-stat-card">
+                <div class="card-body">
+                    <div class="admin-stat-number">@totalSponsorships</div>
+                    <div class="text-muted">Sponsorship Inquiries</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-lg-3">
+            <div class="card text-center admin-stat-card">
+                <div class="card-body">
+                    <div class="admin-stat-number text-danger">@unreadSponsorships</div>
+                    <div class="text-muted">Unread Sponsorships</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recent Contact Messages</h5>
+                    <a href="/admin/contact" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    @if (recentContacts.Count == 0)
+                    {
+                        <p class="text-muted p-3 mb-0">No messages yet.</p>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Name</th>
+                                        <th>Subject</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var c in recentContacts)
+                                    {
+                                        <tr class="@(c.IsRead ? "admin-row-read" : "admin-row-unread")">
+                                            <td><span class="admin-status-dot @(c.IsRead ? "read" : "unread")"></span></td>
+                                            <td><a href="/admin/contact/@c.Id">@c.Name</a></td>
+                                            <td>@c.Subject</td>
+                                            <td>@c.SubmittedAt.ToLocalTime().ToString("MM/dd/yyyy")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recent Sponsorship Inquiries</h5>
+                    <a href="/admin/sponsorships" class="btn btn-sm btn-outline-primary">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    @if (recentSponsorships.Count == 0)
+                    {
+                        <p class="text-muted p-3 mb-0">No inquiries yet.</p>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Business</th>
+                                        <th>Tier</th>
+                                        <th>Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var s in recentSponsorships)
+                                    {
+                                        <tr class="@(s.IsRead ? "admin-row-read" : "admin-row-unread")">
+                                            <td><span class="admin-status-dot @(s.IsRead ? "read" : "unread")"></span></td>
+                                            <td><a href="/admin/sponsorships/@s.Id">@s.BusinessName</a></td>
+                                            <td>@s.SponsorshipTier</td>
+                                            <td>@s.SubmittedAt.ToLocalTime().ToString("MM/dd/yyyy")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <p>Loading...</p>
+}
+
+@code {
+    [Inject] private ContactSubmissionService ContactService { get; set; } = default!;
+    [Inject] private SponsorshipSubmissionService SponsorshipService { get; set; } = default!;
+
+    private bool loaded;
+    private int totalContacts, unreadContacts, totalSponsorships, unreadSponsorships;
+    private List<cgca.web.Models.ContactSubmission> recentContacts = [];
+    private List<cgca.web.Models.SponsorshipSubmission> recentSponsorships = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        totalContacts = await ContactService.GetTotalCountAsync();
+        unreadContacts = await ContactService.GetUnreadCountAsync();
+        totalSponsorships = await SponsorshipService.GetTotalCountAsync();
+        unreadSponsorships = await SponsorshipService.GetUnreadCountAsync();
+        recentContacts = (await ContactService.SearchAsync(null, null, 1, 5)).Items;
+        recentSponsorships = (await SponsorshipService.SearchAsync(null, null, 1, 5)).Items;
+        loaded = true;
+    }
+}

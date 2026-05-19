@@ -362,3 +362,41 @@ code {
 .site-footer a:hover {
     color: #aadcf7;
 }
+
+/* ===== Admin styles ===== */
+.admin-navbar {
+    background-color: #2d5016;
+}
+
+.admin-stat-card {
+    border-left: 4px solid #2d5016;
+}
+
+.admin-stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.admin-row-unread {
+    background-color: #f0f7ff;
+    font-weight: 600;
+}
+
+.admin-row-read {
+    color: #6c757d;
+}
+
+.admin-status-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.admin-status-dot.unread {
+    background-color: #0d6efd;
+}
+
+.admin-status-dot.read {
+    background-color: #dee2e6;
+}

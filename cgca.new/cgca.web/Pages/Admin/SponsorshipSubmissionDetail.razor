@@ -1,0 +1,125 @@
+@page "/admin/sponsorships/{Id:int}"
+@attribute [Authorize]
+@layout AdminLayout
+@rendermode InteractiveServer
+@using cgca.web.Services
+@using cgca.web.Models
+
+<PageTitle>Sponsorship Inquiry - CGCA Admin</PageTitle>
+
+@if (item == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Inquiry from @item.BusinessName</h2>
+        <a href="/admin/sponsorships" class="btn btn-outline-secondary btn-sm">Back to List</a>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <strong>Contact Name:</strong>
+                    <p>@item.ContactName</p>
+                </div>
+                <div class="col-md-6">
+                    <strong>Business Name:</strong>
+                    <p>@item.BusinessName</p>
+                </div>
+                <div class="col-md-6">
+                    <strong>Email:</strong>
+                    <p><a href="mailto:@item.Email">@item.Email</a></p>
+                </div>
+                <div class="col-md-6">
+                    <strong>Phone:</strong>
+                    <p>@(item.Phone ?? "N/A")</p>
+                </div>
+                <div class="col-md-6">
+                    <strong>Sponsorship Tier:</strong>
+                    <p>@item.SponsorshipTier</p>
+                </div>
+                <div class="col-md-6">
+                    <strong>Status:</strong>
+                    <p>
+                        <span class="badge @(item.IsRead ? "bg-secondary" : "bg-primary")">
+                            @(item.IsRead ? "Read" : "Unread")
+                        </span>
+                    </p>
+                </div>
+                @if (!string.IsNullOrEmpty(item.Message))
+                {
+                    <div class="col-12">
+                        <strong>Message:</strong>
+                        <p style="white-space: pre-wrap;">@item.Message</p>
+                    </div>
+                }
+                <div class="col-md-6">
+                    <strong>Submitted:</strong>
+                    <p>@item.SubmittedAt.ToLocalTime().ToString("MMMM dd, yyyy 'at' h:mm tt")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex gap-2">
+        <button class="btn btn-outline-primary" @onclick="ToggleRead">
+            @(item.IsRead ? "Mark as Unread" : "Mark as Read")
+        </button>
+        <button class="btn btn-outline-danger" @onclick="() => showDeleteConfirm = true">Delete</button>
+    </div>
+}
+
+@if (showDeleteConfirm)
+{
+    <div class="modal d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Delete</h5>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this inquiry? This cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="() => showDeleteConfirm = false">Cancel</button>
+                    <button class="btn btn-danger" @onclick="ExecuteDelete">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+    [Inject] private SponsorshipSubmissionService SubmissionService { get; set; } = default!;
+    [Inject] private NavigationManager Nav { get; set; } = default!;
+
+    private SponsorshipSubmission? item;
+    private bool showDeleteConfirm;
+
+    protected override async Task OnInitializedAsync()
+    {
+        item = await SubmissionService.GetByIdAsync(Id);
+        if (item != null && !item.IsRead)
+        {
+            await SubmissionService.MarkAsReadAsync(Id);
+            item.IsRead = true;
+        }
+    }
+
+    private async Task ToggleRead()
+    {
+        if (item == null) return;
+        await SubmissionService.ToggleReadAsync(Id);
+        item.IsRead = !item.IsRead;
+    }
+
+    private async Task ExecuteDelete()
+    {
+        await SubmissionService.DeleteAsync(Id);
+        Nav.NavigateTo("/admin/sponsorships");
+    }
+}

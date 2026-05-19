@@ -1,4 +1,7 @@
 @page "/sponsors"
+@rendermode InteractiveServer
+@using cgca.web.Models
+@using cgca.web.Services
 
 <PageTitle>Partner With Us | Sponsorship Opportunities | Cedar Grove Christian Academy</PageTitle>
 <HeadContent>
@@ -75,8 +78,7 @@
           <li>Larger featured logo placement on the website</li>
           <li>Signage on the playground fence</li>
         </ul>
-        <a href="mailto:@ContactEmail?subject=Gold%20Sponsorship%20Inquiry"
-           class="btn btn-sponsor btn-gold">Become a Gold Sponsor</a>
+        <button class="btn btn-sponsor btn-gold" @onclick='() => SelectTier("Gold")'>Become a Gold Sponsor</button>
       </div>
     </div>
     <div class="col-sm-12 col-md-4 mb-4">
@@ -88,8 +90,7 @@
           <li>Logo placement on the school website</li>
           <li>Name on our Wall of Sponsors</li>
         </ul>
-        <a href="mailto:@ContactEmail?subject=Silver%20Sponsorship%20Inquiry"
-           class="btn btn-sponsor btn-silver">Become a Silver Sponsor</a>
+        <button class="btn btn-sponsor btn-silver" @onclick='() => SelectTier("Silver")'>Become a Silver Sponsor</button>
       </div>
     </div>
     <div class="col-sm-12 col-md-4 mb-4">
@@ -99,8 +100,7 @@
         <ul class="tier-benefits">
           <li>Mentions on our website and social media</li>
         </ul>
-        <a href="mailto:@ContactEmail?subject=Bronze%20Sponsorship%20Inquiry"
-           class="btn btn-sponsor btn-bronze">Become a Bronze Sponsor</a>
+        <button class="btn btn-sponsor btn-bronze" @onclick='() => SelectTier("Bronze")'>Become a Bronze Sponsor</button>
       </div>
     </div>
   </div>
@@ -222,24 +222,89 @@
   <div class="col-12">&nbsp;</div>
 </div>
 
-<!-- CTA Footer Section -->
-<section aria-label="Get in touch">
+<!-- Sponsorship Form -->
+<section aria-label="Sponsorship inquiry form" id="sponsor-form">
   <div class="row">
-    <div class="col-12 text-center sponsor-cta">
-      <h3>Ready to Make a Difference?</h3>
-      <p>We would be honored to have your business join us in making this school year transformative.</p>
-      <a href="mailto:@ContactEmail?subject=Sponsorship%20Inquiry"
-         class="btn btn-success btn-lg btn-rounded">
-        <Icon Name="IconName.HeartFill" />
-        &nbsp;&nbsp;Become a Sponsor&nbsp;&nbsp;
-        <Icon Name="IconName.HeartFill" />
-      </a>
-      <div class="sponsor-contact-info">
-        <p>Tray Earnhart, Head of School</p>
-        <p>(502) 543-4101 |
-          <a href="mailto:@ContactEmail">@ContactEmail</a>
-        </p>
+    <div class="col-12">
+      <div class="section-header">
+        <p class="section-header-title">Get In Touch</p>
+        <p class="section-header-subtitle">Ready to make a difference? Fill out the form below.</p>
       </div>
+    </div>
+  </div>
+  <div class="row"><div class="col-12">&nbsp;</div></div>
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-sm-12">
+
+      @if (submitted)
+      {
+        <div class="alert alert-success" role="alert">
+          <h5>Thank you, @submittedName!</h5>
+          <p class="mb-0">We've received your sponsorship inquiry and will be in touch soon. A confirmation has been sent to your email.</p>
+        </div>
+      }
+      else if (submitError)
+      {
+        <div class="alert alert-danger" role="alert">
+          Something went wrong. Please try again or contact us directly at (502) 543-4101.
+        </div>
+      }
+      else
+      {
+        <EditForm Model="form" OnValidSubmit="HandleSubmit">
+          <DataAnnotationsValidator />
+
+          <div class="mb-3">
+            <label class="form-label">Contact Name <span class="text-danger">*</span></label>
+            <InputText class="form-control" @bind-Value="form.ContactName" placeholder="Your full name" />
+            <ValidationMessage For="() => form.ContactName" />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Business Name <span class="text-danger">*</span></label>
+            <InputText class="form-control" @bind-Value="form.BusinessName" placeholder="Your business or organization" />
+            <ValidationMessage For="() => form.BusinessName" />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Email <span class="text-danger">*</span></label>
+            <InputText type="email" class="form-control" @bind-Value="form.Email" placeholder="your@email.com" />
+            <ValidationMessage For="() => form.Email" />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Phone</label>
+            <InputText class="form-control" @bind-Value="form.Phone" placeholder="(555) 555-5555" />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Sponsorship Level <span class="text-danger">*</span></label>
+            <InputSelect class="form-select" @bind-Value="form.SponsorshipTier">
+              <option value="">-- Select a level --</option>
+              <option value="Gold">Gold ($1,500)</option>
+              <option value="Silver">Silver ($750)</option>
+              <option value="Bronze">Bronze ($250)</option>
+            </InputSelect>
+            <ValidationMessage For="() => form.SponsorshipTier" />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Message</label>
+            <InputTextArea class="form-control" @bind-Value="form.Message" rows="4" placeholder="Any questions or additional details..." />
+          </div>
+
+          <button type="submit" class="btn btn-success btn-lg btn-rounded" disabled="@submitting">
+            @if (submitting)
+            {
+              <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+            }
+            <Icon Name="IconName.HeartFill" />
+            &nbsp;&nbsp;Submit Sponsorship Inquiry&nbsp;&nbsp;
+            <Icon Name="IconName.HeartFill" />
+          </button>
+        </EditForm>
+      }
+
     </div>
   </div>
 </section>
@@ -249,7 +314,13 @@
 </div>
 
 @code {
-    private const string ContactEmail = "contactus@cedargrovechristianacademy.org";
+    [Inject] private SponsorshipSubmissionService SubmissionService { get; set; } = default!;
+
+    private SponsorForm form = new();
+    private bool submitted;
+    private bool submitting;
+    private bool submitError;
+    private string submittedName = "";
 
     private record SponsorInfo(string Name, string Logo, string Tier, string? Website = null);
 
@@ -264,4 +335,62 @@
     private IEnumerable<SponsorInfo> GoldSponsors => SponsorList.Where(s => string.Equals(s.Tier, "Gold", StringComparison.OrdinalIgnoreCase));
     private IEnumerable<SponsorInfo> SilverSponsors => SponsorList.Where(s => string.Equals(s.Tier, "Silver", StringComparison.OrdinalIgnoreCase));
     private IEnumerable<SponsorInfo> BronzeSponsors => SponsorList.Where(s => string.Equals(s.Tier, "Bronze", StringComparison.OrdinalIgnoreCase));
+
+    private void SelectTier(string tier)
+    {
+        form.SponsorshipTier = tier;
+        // scroll to form
+    }
+
+    private async Task HandleSubmit()
+    {
+        submitting = true;
+        submitError = false;
+
+        var submission = new SponsorshipSubmission
+        {
+            ContactName = form.ContactName,
+            BusinessName = form.BusinessName,
+            Email = form.Email,
+            Phone = string.IsNullOrWhiteSpace(form.Phone) ? null : form.Phone,
+            SponsorshipTier = form.SponsorshipTier,
+            Message = string.IsNullOrWhiteSpace(form.Message) ? null : form.Message
+        };
+
+        var success = await SubmissionService.SubmitAsync(submission);
+        submitting = false;
+
+        if (success)
+        {
+            submittedName = form.ContactName;
+            submitted = true;
+        }
+        else
+        {
+            submitError = true;
+        }
+    }
+
+    private class SponsorForm
+    {
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Contact name is required.")]
+        [System.ComponentModel.DataAnnotations.StringLength(100)]
+        public string ContactName { get; set; } = "";
+
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Business name is required.")]
+        [System.ComponentModel.DataAnnotations.StringLength(200)]
+        public string BusinessName { get; set; } = "";
+
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Email is required.")]
+        [System.ComponentModel.DataAnnotations.EmailAddress(ErrorMessage = "Please enter a valid email.")]
+        public string Email { get; set; } = "";
+
+        public string? Phone { get; set; }
+
+        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Please select a sponsorship level.")]
+        public string SponsorshipTier { get; set; } = "";
+
+        [System.ComponentModel.DataAnnotations.StringLength(2000)]
+        public string? Message { get; set; }
+    }
 }
