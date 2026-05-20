@@ -57,7 +57,10 @@ using (var scope = app.Services.CreateScope())
     var adminConfig = app.Configuration.GetSection("AdminSeed");
     var username = adminConfig["Username"] ?? "admin";
     var email = adminConfig["Email"] ?? "admin@cedargrovechristianacademy.org";
-    var password = adminConfig["Password"] ?? "Admin@CGCA2026!";
+    var password = adminConfig["Password"];
+
+    if (string.IsNullOrWhiteSpace(password))
+        throw new InvalidOperationException("AdminSeed:Password must be set in configuration before first run.");
 
     var existingUser = await userManager.FindByNameAsync(username);
     if (existingUser == null)
