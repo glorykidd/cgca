@@ -416,3 +416,10 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# CGCA secrets and runtime data
+appsettings.Development.json
+appsettings.Production.json
+cgca.new/cgca.web/Data/*.db
+cgca.new/cgca.web/Data/*.db-shm
+cgca.new/cgca.web/Data/*.db-wal

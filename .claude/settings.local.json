@@ -11,7 +11,16 @@
       "Bash(git checkout:*)",
       "Bash(git commit:*)",
       "Bash(git push:*)",
-      "Bash(dotnet run:*)"
+      "Bash(dotnet run:*)",
+      "Bash(pkill -f \"dotnet run\")",
+      "Bash(git add *)",
+      "Bash(git -C /Users/dnuckolls/projects/current/glorykidd/cgca add cgca.new/cgca.web/Pages/Home.razor cgca.new/cgca.web/Pages/Programs.razor cgca.new/cgca.web/Pages/Admissions.razor)",
+      "Bash(git -C /Users/dnuckolls/projects/current/glorykidd/cgca commit -m ' *)",
+      "Bash(git *)",
+      "Bash(gh pr *)",
+      "Read(//Users/dnuckolls/projects/current/glorykidd/cgbc/.github/workflows/**)",
+      "Read(//Users/dnuckolls/projects/current/glorykidd/cgbc/**)",
+      "Bash(dotnet ef migrations *)"
     ]
   },
   "enableAllProjectMcpServers": true,
