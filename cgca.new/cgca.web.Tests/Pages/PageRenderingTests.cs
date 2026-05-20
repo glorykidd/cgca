@@ -86,24 +86,31 @@ public class PageRenderingTests : BunitContext
     }
 
     [Fact]
+    public void SponsorsPage_RendersWithoutException()
+    {
+        var cut = Render<Sponsors>();
+
+        cut.Should().NotBeNull("Sponsors page should render");
+        cut.Markup.Should().NotBeEmpty("Sponsors page should have content");
+    }
+
+    [Fact]
     public void AllPages_RenderWithoutExceptions()
     {
-        // This test serves as a comprehensive check that all pages can be instantiated
-
-        // Arrange & Act
         Action renderHome = () => Render<Home>();
         Action renderAbout = () => Render<About>();
         Action renderParents = () => Render<Parents>();
         Action renderContact = () => Render<Contact>();
         Action renderCalendar = () => Render<Calendar>();
         Action renderPrivacy = () => Render<Privacy>();
+        Action renderSponsors = () => Render<Sponsors>();
 
-        // Assert - None should throw exceptions
         renderHome.Should().NotThrow("Home page should render without exceptions");
         renderAbout.Should().NotThrow("About page should render without exceptions");
         renderParents.Should().NotThrow("Parents page should render without exceptions");
         renderContact.Should().NotThrow("Contact page should render without exceptions");
         renderCalendar.Should().NotThrow("Calendar page should render without exceptions");
         renderPrivacy.Should().NotThrow("Privacy page should render without exceptions");
+        renderSponsors.Should().NotThrow("Sponsors page should render without exceptions");
     }
 }
