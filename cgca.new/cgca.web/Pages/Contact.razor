@@ -128,8 +128,29 @@
 
           <div class="mb-3">
             <label class="form-label">Subject <span class="text-danger">*</span></label>
-            <InputText class="form-control" @bind-Value="form.Subject" placeholder="How can we help?" />
-            <ValidationMessage For="() => form.Subject" />
+            <div class="subject-checkboxes">
+              @foreach (var option in SubjectOptions)
+              {
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="subj_@option"
+                    checked="@selectedSubjects.Contains(option)"
+                    @onchange="e => ToggleSubject(option, (bool)e.Value!)" />
+                  <label class="form-check-label" for="subj_@option">@option</label>
+                </div>
+              }
+            </div>
+            @if (selectedSubjects.Contains("Other"))
+            {
+              <InputText class="form-control mt-2" @bind-Value="form.OtherSubject" placeholder="Please describe..." />
+            }
+            @if (subjectError)
+            {
+              <div class="text-danger small mt-1">Please select at least one subject.</div>
+            }
+            @if (otherSubjectError)
+            {
+              <div class="text-danger small mt-1">Please describe your subject.</div>
+            }
           </div>
 
           <div class="mb-3">
@@ -138,13 +159,15 @@
             <ValidationMessage For="() => form.Message" />
           </div>
 
-          <button type="submit" class="btn btn-success btn-lg btn-rounded" disabled="@submitting">
-            @if (submitting)
-            {
-              <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-            }
-            Send Message
-          </button>
+          <div class="text-center">
+            <button type="submit" class="btn btn-success btn-lg btn-rounded" disabled="@submitting">
+              @if (submitting)
+              {
+                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+              }
+              Send Message
+            </button>
+          </div>
         </EditForm>
       }
 
@@ -159,19 +182,50 @@
     private bool submitted;
     private bool submitting;
     private bool submitError;
+    private bool subjectError;
+    private bool otherSubjectError;
     private string submittedName = "";
+
+    private static readonly string[] SubjectOptions =
+    [
+        "General Inquiry",
+        "Admissions / Enrollment",
+        "Tuition & Fees",
+        "Curriculum",
+        "Volunteering",
+        "Prayer Request",
+        "Other"
+    ];
+
+    private HashSet<string> selectedSubjects = new();
+
+    private void ToggleSubject(string option, bool isChecked)
+    {
+        if (isChecked) selectedSubjects.Add(option);
+        else selectedSubjects.Remove(option);
+        subjectError = false;
+    }
 
     private async Task HandleSubmit()
     {
+        subjectError = selectedSubjects.Count == 0;
+        otherSubjectError = selectedSubjects.Contains("Other") && string.IsNullOrWhiteSpace(form.OtherSubject);
+
+        if (subjectError || otherSubjectError) return;
+
         submitting = true;
         submitError = false;
+
+        var subjects = selectedSubjects
+            .Select(s => s == "Other" ? $"Other: {form.OtherSubject!.Trim()}" : s)
+            .ToList();
 
         var submission = new ContactSubmission
         {
             Name = form.Name,
             Email = form.Email,
             Phone = string.IsNullOrWhiteSpace(form.Phone) ? null : form.Phone,
-            Subject = form.Subject,
+            Subject = string.Join(", ", subjects),
             Message = form.Message
         };
 
@@ -201,9 +255,7 @@
 
         public string? Phone { get; set; }
 
-        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Subject is required.")]
-        [System.ComponentModel.DataAnnotations.StringLength(200)]
-        public string Subject { get; set; } = "";
+        public string? OtherSubject { get; set; }
 
         [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Message is required.")]
         [System.ComponentModel.DataAnnotations.StringLength(5000)]

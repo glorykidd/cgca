@@ -45,7 +45,7 @@ public class SponsorshipSubmissionService
             var term = searchTerm.ToLower();
             query = query.Where(s =>
                 s.ContactName.ToLower().Contains(term) ||
-                s.BusinessName.ToLower().Contains(term) ||
+                (s.BusinessName != null && s.BusinessName.ToLower().Contains(term)) ||
                 s.Email.ToLower().Contains(term) ||
                 (s.Phone != null && s.Phone.ToLower().Contains(term)));
         }

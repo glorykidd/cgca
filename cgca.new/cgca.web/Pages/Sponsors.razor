@@ -261,8 +261,8 @@
           </div>
 
           <div class="mb-3">
-            <label class="form-label">Business Name <span class="text-danger">*</span></label>
-            <InputText class="form-control" @bind-Value="form.BusinessName" placeholder="Your business or organization" />
+            <label class="form-label">Business Name</label>
+            <InputText class="form-control" @bind-Value="form.BusinessName" placeholder="Your business or organization (optional)" />
             <ValidationMessage For="() => form.BusinessName" />
           </div>
 
@@ -272,20 +272,21 @@
             <ValidationMessage For="() => form.Email" />
           </div>
 
-          <div class="mb-3">
-            <label class="form-label">Phone</label>
-            <InputText class="form-control" @bind-Value="form.Phone" placeholder="(555) 555-5555" />
-          </div>
-
-          <div class="mb-3">
-            <label class="form-label">Sponsorship Level <span class="text-danger">*</span></label>
-            <InputSelect class="form-select" @bind-Value="form.SponsorshipTier">
-              <option value="">-- Select a level --</option>
-              <option value="Gold">Gold ($1,500)</option>
-              <option value="Silver">Silver ($750)</option>
-              <option value="Bronze">Bronze ($250)</option>
-            </InputSelect>
-            <ValidationMessage For="() => form.SponsorshipTier" />
+          <div class="row mb-3">
+            <div class="col-sm-6">
+              <label class="form-label">Phone</label>
+              <InputText class="form-control" @bind-Value="form.Phone" placeholder="(555) 555-5555" />
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label">Sponsorship Level <span class="text-danger">*</span></label>
+              <InputSelect class="form-select" @bind-Value="form.SponsorshipTier">
+                <option value="">-- Select a level --</option>
+                <option value="Gold">Gold ($1,500)</option>
+                <option value="Silver">Silver ($750)</option>
+                <option value="Bronze">Bronze ($250)</option>
+              </InputSelect>
+              <ValidationMessage For="() => form.SponsorshipTier" />
+            </div>
           </div>
 
           <div class="mb-3">
@@ -293,15 +294,17 @@
             <InputTextArea class="form-control" @bind-Value="form.Message" rows="4" placeholder="Any questions or additional details..." />
           </div>
 
-          <button type="submit" class="btn btn-success btn-lg btn-rounded" disabled="@submitting">
-            @if (submitting)
-            {
-              <span class="spinner-border spinner-border-sm me-2" role="status"></span>
-            }
-            <Icon Name="IconName.HeartFill" />
-            &nbsp;&nbsp;Submit Sponsorship Inquiry&nbsp;&nbsp;
-            <Icon Name="IconName.HeartFill" />
-          </button>
+          <div class="text-center">
+            <button type="submit" class="btn btn-success btn-lg btn-rounded" disabled="@submitting">
+              @if (submitting)
+              {
+                <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+              }
+              <Icon Name="IconName.HeartFill" />
+              &nbsp;&nbsp;Submit Sponsorship Inquiry&nbsp;&nbsp;
+              <Icon Name="IconName.HeartFill" />
+            </button>
+          </div>
         </EditForm>
       }
 
@@ -350,7 +353,7 @@
         var submission = new SponsorshipSubmission
         {
             ContactName = form.ContactName,
-            BusinessName = form.BusinessName,
+            BusinessName = string.IsNullOrWhiteSpace(form.BusinessName) ? null : form.BusinessName,
             Email = form.Email,
             Phone = string.IsNullOrWhiteSpace(form.Phone) ? null : form.Phone,
             SponsorshipTier = form.SponsorshipTier,
@@ -377,9 +380,8 @@
         [System.ComponentModel.DataAnnotations.StringLength(100)]
         public string ContactName { get; set; } = "";
 
-        [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Business name is required.")]
         [System.ComponentModel.DataAnnotations.StringLength(200)]
-        public string BusinessName { get; set; } = "";
+        public string? BusinessName { get; set; }
 
         [System.ComponentModel.DataAnnotations.Required(ErrorMessage = "Email is required.")]
         [System.ComponentModel.DataAnnotations.EmailAddress(ErrorMessage = "Please enter a valid email.")]
