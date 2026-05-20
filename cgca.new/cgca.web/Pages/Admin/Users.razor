@@ -1,0 +1,123 @@
+@page "/admin/users"
+@using Microsoft.EntityFrameworkCore
+@attribute [Authorize]
+@layout AdminLayout
+@rendermode InteractiveServer
+@using cgca.web.Models
+
+<PageTitle>Users - CGCA Admin</PageTitle>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">Admin Users</h2>
+    <a href="/admin/users/new" class="btn btn-primary btn-sm">
+        <i class="bi bi-plus-lg"></i> Create User
+    </a>
+</div>
+
+@if (users == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Display Name</th>
+                            <th>Email</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var u in users)
+                        {
+                            <tr>
+                                <td>@u.UserName</td>
+                                <td>@(u.DisplayName ?? "—")</td>
+                                <td>@u.Email</td>
+                                <td>
+                                    <a href="/admin/users/@u.Id/edit" class="btn btn-sm btn-outline-primary me-1" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    @if (!IsProtected(u))
+                                    {
+                                        <button class="btn btn-sm btn-outline-danger" title="Delete"
+                                                @onclick="() => ConfirmDelete(u.Id, u.UserName!)">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+@if (showDeleteConfirm)
+{
+    <div class="modal d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Delete</h5>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete user <strong>@deleteTargetName</strong>? This cannot be undone.</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
+                    <button class="btn btn-danger" @onclick="ExecuteDelete">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Inject] private UserManager<AdminUser> UserManager { get; set; } = default!;
+    [Inject] private AuthenticationStateProvider AuthStateProvider { get; set; } = default!;
+    [Inject] private IConfiguration Configuration { get; set; } = default!;
+
+    private List<AdminUser>? users;
+    private string? currentUserName;
+    private string? seededUserName;
+    private bool showDeleteConfirm;
+    private string deleteTargetId = "";
+    private string deleteTargetName = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        currentUserName = authState.User.Identity?.Name;
+        seededUserName = Configuration.GetSection("AdminSeed")["Username"] ?? "admin";
+        await LoadUsers();
+    }
+
+    private async Task LoadUsers()
+    {
+        users = await UserManager.Users.OrderBy(u => u.UserName).ToListAsync();
+    }
+
+    private bool IsProtected(AdminUser u) =>
+        string.Equals(u.UserName, currentUserName, StringComparison.OrdinalIgnoreCase)
+        || string.Equals(u.UserName, seededUserName, StringComparison.OrdinalIgnoreCase);
+
+    private void ConfirmDelete(string id, string name) { deleteTargetId = id; deleteTargetName = name; showDeleteConfirm = true; }
+    private void CancelDelete() { showDeleteConfirm = false; }
+
+    private async Task ExecuteDelete()
+    {
+        var userToDelete = await UserManager.FindByIdAsync(deleteTargetId);
+        if (userToDelete != null && !IsProtected(userToDelete))
+            await UserManager.DeleteAsync(userToDelete);
+        showDeleteConfirm = false;
+        await LoadUsers();
+    }
+}

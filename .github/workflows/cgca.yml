@@ -62,6 +62,12 @@ jobs:
           Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "Test Results:"
           Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value "---------------------------------"
           Add-Content -Path C:/deployment-stage/cgca-${{ steps.buildid.outputs.formattedTime }}.txt -Value (Get-Content -Path C:/deployment-stage/cgca-tests-${{ steps.buildid.outputs.formattedTime }}.md)
+      - name: Verify production config exists
+        run: |
+          if (-not (Test-Path "C:/www-root/cedargrovechristianacademy.org/appsettings.Production.json")) {
+            Write-Error "appsettings.Production.json is missing from the server. Deploy aborted."
+            exit 1
+          }
       - name: Create backup of current website
         run: |
           New-Item -ItemType "directory" -Path "C:/deployment-stage/cgca/${{ steps.buildid.outputs.formattedTime }}/" -Force

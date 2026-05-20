@@ -16,11 +16,10 @@ public class RoutingTests : BunitContext
 {
     public RoutingTests()
     {
-        // Setup required services for routing tests
         Services.AddBlazorBootstrap();
         Services.AddSingleton<IChatService, StubChatService>();
-
-        // Mock JS Interop calls for Blazor Bootstrap
+        Services.AddSingleton<cgca.web.Services.ContactSubmissionService, StubContactSubmissionService>();
+        Services.AddSingleton<cgca.web.Services.SponsorshipSubmissionService, StubSponsorshipSubmissionService>();
         JSInterop.Mode = JSRuntimeMode.Loose;
     }
 
@@ -124,12 +123,17 @@ public class RoutingTests : BunitContext
     }
 
     [Fact]
+    public void Router_SponsorsRoute_PageRendersCorrectly()
+    {
+        var cut = Render<Sponsors>();
+
+        cut.Should().NotBeNull("Sponsors page component should render");
+        cut.Markup.Should().NotBeEmpty("Sponsors page should have content");
+    }
+
+    [Fact]
     public void AllRoutes_HaveCorrespondingComponents()
     {
-        // This test ensures all page components can be instantiated
-        // which proves the routes will resolve correctly
-
-        // Arrange & Act
         Action renderHome = () => Render<Home>();
         Action renderAbout = () => Render<About>();
         Action renderParents = () => Render<Parents>();
@@ -138,8 +142,8 @@ public class RoutingTests : BunitContext
         Action renderPrivacy = () => Render<Privacy>();
         Action renderPrograms = () => Render<Programs>();
         Action renderAdmissions = () => Render<Admissions>();
+        Action renderSponsors = () => Render<Sponsors>();
 
-        // Assert - None should throw exceptions
         renderHome.Should().NotThrow("Home route component should render");
         renderAbout.Should().NotThrow("About route component should render");
         renderParents.Should().NotThrow("Parents route component should render");
@@ -148,5 +152,6 @@ public class RoutingTests : BunitContext
         renderPrivacy.Should().NotThrow("Privacy route component should render");
         renderPrograms.Should().NotThrow("Programs route component should render");
         renderAdmissions.Should().NotThrow("Admissions route component should render");
+        renderSponsors.Should().NotThrow("Sponsors route component should render");
     }
 }

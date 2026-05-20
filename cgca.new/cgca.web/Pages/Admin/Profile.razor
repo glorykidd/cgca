@@ -1,0 +1,136 @@
+@page "/admin/profile"
+@attribute [Authorize]
+@layout AdminLayout
+@rendermode InteractiveServer
+@using cgca.web.Models
+
+<PageTitle>Profile - CGCA Admin</PageTitle>
+
+<h2 class="mb-4">My Profile</h2>
+
+@if (user == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header"><h5 class="mb-0">Profile Information</h5></div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(profileMessage))
+                    {
+                        <div class="alert @(profileSuccess ? "alert-success" : "alert-danger") alert-dismissible">
+                            @profileMessage
+                            <button type="button" class="btn-close" @onclick="() => profileMessage = null"></button>
+                        </div>
+                    }
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input type="text" class="form-control" value="@user.UserName" disabled />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Display Name</label>
+                        <input type="text" class="form-control" @bind="displayName" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" @bind="email" />
+                    </div>
+                    <button class="btn btn-primary" @onclick="SaveProfile">Save Changes</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header"><h5 class="mb-0">Change Password</h5></div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(passwordMessage))
+                    {
+                        <div class="alert @(passwordSuccess ? "alert-success" : "alert-danger") alert-dismissible">
+                            @passwordMessage
+                            <button type="button" class="btn-close" @onclick="() => passwordMessage = null"></button>
+                        </div>
+                    }
+                    <div class="mb-3">
+                        <label class="form-label">Current Password</label>
+                        <input type="password" class="form-control" @bind="currentPassword" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">New Password</label>
+                        <input type="password" class="form-control" @bind="newPassword" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Confirm New Password</label>
+                        <input type="password" class="form-control" @bind="confirmPassword" />
+                    </div>
+                    <button class="btn btn-primary" @onclick="ChangePassword">Change Password</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Inject] private UserManager<AdminUser> UserManager { get; set; } = default!;
+    [Inject] private AuthenticationStateProvider AuthStateProvider { get; set; } = default!;
+
+    private AdminUser? user;
+    private string displayName = "";
+    private string email = "";
+    private string currentPassword = "";
+    private string newPassword = "";
+    private string confirmPassword = "";
+    private string? profileMessage;
+    private bool profileSuccess;
+    private string? passwordMessage;
+    private bool passwordSuccess;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var userName = authState.User.Identity?.Name;
+        if (userName != null)
+        {
+            user = await UserManager.FindByNameAsync(userName);
+            if (user != null) { displayName = user.DisplayName ?? ""; email = user.Email ?? ""; }
+        }
+    }
+
+    private async Task SaveProfile()
+    {
+        if (user == null) return;
+        user.DisplayName = displayName;
+        user.Email = email;
+        var result = await UserManager.UpdateAsync(user);
+        if (result.Succeeded) { profileMessage = "Profile updated successfully."; profileSuccess = true; }
+        else { profileMessage = string.Join(" ", result.Errors.Select(e => e.Description)); profileSuccess = false; }
+    }
+
+    private async Task ChangePassword()
+    {
+        if (user == null) return;
+        if (string.IsNullOrWhiteSpace(currentPassword) || string.IsNullOrWhiteSpace(newPassword))
+        {
+            passwordMessage = "Please fill in all password fields.";
+            passwordSuccess = false;
+            return;
+        }
+        if (newPassword != confirmPassword)
+        {
+            passwordMessage = "New password and confirmation do not match.";
+            passwordSuccess = false;
+            return;
+        }
+        var result = await UserManager.ChangePasswordAsync(user, currentPassword, newPassword);
+        if (result.Succeeded)
+        {
+            passwordMessage = "Password changed successfully.";
+            passwordSuccess = true;
+            currentPassword = newPassword = confirmPassword = "";
+        }
+        else { passwordMessage = string.Join(" ", result.Errors.Select(e => e.Description)); passwordSuccess = false; }
+    }
+}
