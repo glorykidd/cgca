@@ -16,11 +16,10 @@ public class RoutingTests : BunitContext
 {
     public RoutingTests()
     {
-        // Setup required services for routing tests
         Services.AddBlazorBootstrap();
         Services.AddSingleton<IChatService, StubChatService>();
-
-        // Mock JS Interop calls for Blazor Bootstrap
+        Services.AddSingleton<cgca.web.Services.ContactSubmissionService, StubContactSubmissionService>();
+        Services.AddSingleton<cgca.web.Services.SponsorshipSubmissionService, StubSponsorshipSubmissionService>();
         JSInterop.Mode = JSRuntimeMode.Loose;
     }
 

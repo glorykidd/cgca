@@ -13,10 +13,9 @@ public class PageRenderingTests : BunitContext
 {
     public PageRenderingTests()
     {
-        // Setup required services
         Services.AddBlazorBootstrap();
-
-        // Mock JS Interop calls for Blazor Bootstrap
+        Services.AddSingleton<cgca.web.Services.ContactSubmissionService, StubContactSubmissionService>();
+        Services.AddSingleton<cgca.web.Services.SponsorshipSubmissionService, StubSponsorshipSubmissionService>();
         JSInterop.Mode = JSRuntimeMode.Loose;
     }
 

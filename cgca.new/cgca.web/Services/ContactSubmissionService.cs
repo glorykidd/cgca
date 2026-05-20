@@ -15,7 +15,7 @@ public class ContactSubmissionService
         _email = email;
     }
 
-    public async Task<bool> SubmitAsync(ContactSubmission submission)
+    public virtual async Task<bool> SubmitAsync(ContactSubmission submission)
     {
         submission.SubmittedAt = DateTime.UtcNow;
         submission.IsRead = false;
