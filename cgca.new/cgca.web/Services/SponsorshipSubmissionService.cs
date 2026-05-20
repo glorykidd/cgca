@@ -15,7 +15,7 @@ public class SponsorshipSubmissionService
         _email = email;
     }
 
-    public async Task<bool> SubmitAsync(SponsorshipSubmission submission)
+    public virtual async Task<bool> SubmitAsync(SponsorshipSubmission submission)
     {
         submission.SubmittedAt = DateTime.UtcNow;
         submission.IsRead = false;

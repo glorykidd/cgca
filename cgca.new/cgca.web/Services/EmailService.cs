@@ -16,7 +16,7 @@ public class EmailService
         _logger = logger;
     }
 
-    public async Task SendContactAdminNotificationAsync(ContactSubmission submission)
+    public virtual async Task SendContactAdminNotificationAsync(ContactSubmission submission)
     {
         var adminEmail = _config["Email:AdminNotificationAddress"];
         if (string.IsNullOrWhiteSpace(adminEmail))
@@ -28,7 +28,7 @@ public class EmailService
         await SendAsync(adminEmail, "CGCA Admin", subject, body);
     }
 
-    public async Task SendContactConfirmationAsync(ContactSubmission submission)
+    public virtual async Task SendContactConfirmationAsync(ContactSubmission submission)
     {
         if (string.IsNullOrWhiteSpace(submission.Email))
             return;
@@ -39,7 +39,7 @@ public class EmailService
         await SendAsync(submission.Email, submission.Name, subject, body);
     }
 
-    public async Task SendSponsorshipAdminNotificationAsync(SponsorshipSubmission submission)
+    public virtual async Task SendSponsorshipAdminNotificationAsync(SponsorshipSubmission submission)
     {
         var adminEmail = _config["Email:AdminNotificationAddress"];
         if (string.IsNullOrWhiteSpace(adminEmail))
@@ -51,7 +51,7 @@ public class EmailService
         await SendAsync(adminEmail, "CGCA Admin", subject, body);
     }
 
-    public async Task SendSponsorshipConfirmationAsync(SponsorshipSubmission submission)
+    public virtual async Task SendSponsorshipConfirmationAsync(SponsorshipSubmission submission)
     {
         if (string.IsNullOrWhiteSpace(submission.Email))
             return;
