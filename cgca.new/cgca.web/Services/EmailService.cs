@@ -74,7 +74,7 @@ public class EmailService
         if (string.IsNullOrWhiteSpace(fromAddress) || string.IsNullOrWhiteSpace(host) ||
             string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
         {
-            _logger.LogWarning("Email not configured — skipping send to {To}", toAddress);
+            _logger.LogWarning("Email not configured — skipping send.");
             return;
         }
 
@@ -94,7 +94,7 @@ public class EmailService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to send email to {To}", toAddress);
+            _logger.LogError(ex, "Failed to send email.");
         }
     }
 
