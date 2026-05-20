@@ -20,7 +20,9 @@
       "Bash(gh pr *)",
       "Read(//Users/dnuckolls/projects/current/glorykidd/cgbc/.github/workflows/**)",
       "Read(//Users/dnuckolls/projects/current/glorykidd/cgbc/**)",
-      "Bash(dotnet ef migrations *)"
+      "Bash(dotnet ef migrations *)",
+      "Bash(gh api *)",
+      "Bash(gh run *)"
     ]
   },
   "enableAllProjectMcpServers": true,
