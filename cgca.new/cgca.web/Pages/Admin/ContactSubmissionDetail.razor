@@ -4,6 +4,7 @@
 @rendermode InteractiveServer
 @using cgca.web.Services
 @using cgca.web.Models
+@using Microsoft.AspNetCore.Components.Authorization
 
 <PageTitle>Contact Message - CGCA Admin</PageTitle>
 
@@ -53,15 +54,103 @@ else
                         </span>
                     </p>
                 </div>
+                <div class="col-md-6">
+                    <strong>Acknowledged:</strong>
+                    <div class="form-check mt-1">
+                        <input class="form-check-input" type="checkbox" id="acknowledgedCheck"
+                               checked="@item.IsAcknowledged"
+                               @onchange="ToggleAcknowledged" />
+                        <label class="form-check-label" for="acknowledgedCheck">
+                            @(item.IsAcknowledged ? "Message has been reviewed" : "Mark as reviewed")
+                        </label>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="d-flex gap-2">
+    <div class="d-flex gap-2 mb-4">
         <button class="btn btn-outline-primary" @onclick="ToggleRead">
             @(item.IsRead ? "Mark as Unread" : "Mark as Read")
         </button>
+        <button class="btn btn-outline-secondary" @onclick="() => showForward = true">Forward</button>
         <button class="btn btn-outline-danger" @onclick="() => showDeleteConfirm = true">Delete</button>
+    </div>
+
+    <h5 class="mb-3">Thread</h5>
+
+    @if (item.Replies.Count == 0)
+    {
+        <p class="text-muted small mb-3">No replies yet.</p>
+    }
+    else
+    {
+        <div class="d-flex flex-column gap-2 mb-3">
+            @foreach (var reply in item.Replies)
+            {
+                <div class="card border-start border-3 border-success">
+                    <div class="card-body py-2 px-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="fw-semibold small">@reply.SentBy</span>
+                            <span class="text-muted small">@reply.SentAt.ToLocalTime().ToString("MMM dd, yyyy 'at' h:mm tt")</span>
+                        </div>
+                        <p class="mb-0 small" style="white-space: pre-wrap;">@reply.Message</p>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <div class="card">
+        <div class="card-body">
+            <label class="form-label fw-semibold" for="replyText">Reply to @item.Name</label>
+            <textarea id="replyText" class="form-control mb-2" rows="5"
+                      @bind="replyText" placeholder="Write your reply..."></textarea>
+            @if (replyError != null)
+            {
+                <div class="text-danger small mb-2">@replyError</div>
+            }
+            @if (replySuccess)
+            {
+                <div class="text-success small mb-2">Reply sent and saved.</div>
+            }
+            <div class="d-flex gap-2">
+                <button class="btn btn-primary" @onclick="SendReply" disabled="@replySending">
+                    @(replySending ? "Sending…" : "Send Reply")
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@if (showForward)
+{
+    <div class="modal d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Forward Message</h5>
+                </div>
+                <div class="modal-body">
+                    <label class="form-label" for="forwardTo">Forward to email address</label>
+                    <input id="forwardTo" type="email" class="form-control" @bind="forwardAddress" placeholder="recipient@example.com" />
+                    @if (forwardError != null)
+                    {
+                        <div class="text-danger small mt-1">@forwardError</div>
+                    }
+                    @if (forwardSuccess)
+                    {
+                        <div class="text-success small mt-1">Message forwarded successfully.</div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="CloseForward">Cancel</button>
+                    <button class="btn btn-primary" @onclick="ExecuteForward" disabled="@forwardSending">
+                        @(forwardSending ? "Sending…" : "Send")
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 }
 
@@ -88,14 +177,33 @@ else
 @code {
     [Parameter] public int Id { get; set; }
     [Inject] private ContactSubmissionService SubmissionService { get; set; } = default!;
+    [Inject] private EmailService EmailService { get; set; } = default!;
     [Inject] private NavigationManager Nav { get; set; } = default!;
+    [CascadingParameter] private AuthenticationState AuthState { get; set; } = default!;
 
     private ContactSubmission? item;
+    private string currentUserName = "Admin";
+
     private bool showDeleteConfirm;
+
+    private bool showForward;
+    private string forwardAddress = "";
+    private string? forwardError;
+    private bool forwardSuccess;
+    private bool forwardSending;
+
+    private string replyText = "";
+    private string? replyError;
+    private bool replySuccess;
+    private bool replySending;
 
     protected override async Task OnInitializedAsync()
     {
-        item = await SubmissionService.GetByIdAsync(Id);
+        currentUserName = AuthState?.User.FindFirst("display_name")?.Value
+            ?? AuthState?.User.Identity?.Name
+            ?? "Admin";
+
+        item = await SubmissionService.GetByIdWithRepliesAsync(Id);
         if (item != null && !item.IsRead)
         {
             await SubmissionService.MarkAsReadAsync(Id);
@@ -110,9 +218,75 @@ else
         item.IsRead = !item.IsRead;
     }
 
+    private async Task ToggleAcknowledged(ChangeEventArgs e)
+    {
+        if (item == null) return;
+        var acknowledged = (bool)(e.Value ?? false);
+        await SubmissionService.SetAcknowledgedAsync(Id, acknowledged);
+        item.IsAcknowledged = acknowledged;
+    }
+
+    private async Task SendReply()
+    {
+        replyError = null;
+        replySuccess = false;
+
+        if (string.IsNullOrWhiteSpace(replyText))
+        {
+            replyError = "Please enter a message before sending.";
+            return;
+        }
+
+        replySending = true;
+        try
+        {
+            await EmailService.SendContactReplyAsync(item!, replyText.Trim());
+            var reply = await SubmissionService.AddReplyAsync(Id, replyText.Trim(), currentUserName);
+            item!.Replies.Add(reply);
+            replyText = "";
+            replySuccess = true;
+        }
+        finally
+        {
+            replySending = false;
+        }
+    }
+
     private async Task ExecuteDelete()
     {
         await SubmissionService.DeleteAsync(Id);
         Nav.NavigateTo("/admin/contact");
+    }
+
+    private async Task ExecuteForward()
+    {
+        forwardError = null;
+        forwardSuccess = false;
+
+        if (string.IsNullOrWhiteSpace(forwardAddress) || !forwardAddress.Contains('@'))
+        {
+            forwardError = "Please enter a valid email address.";
+            return;
+        }
+
+        forwardSending = true;
+        try
+        {
+            await EmailService.ForwardContactSubmissionAsync(item!, forwardAddress.Trim());
+            forwardSuccess = true;
+            forwardAddress = "";
+        }
+        finally
+        {
+            forwardSending = false;
+        }
+    }
+
+    private void CloseForward()
+    {
+        showForward = false;
+        forwardAddress = "";
+        forwardError = null;
+        forwardSuccess = false;
     }
 }

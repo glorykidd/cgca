@@ -1,5 +1,6 @@
 using cgca.web.client.Services;
 using cgca.web.Data;
+using cgca.web.Identity;
 using cgca.web.Models;
 using cgca.web.Services;
 using Microsoft.AspNetCore.Identity;
@@ -18,6 +19,7 @@ Directory.CreateDirectory(Path.GetDirectoryName(dbPath)!);
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite($"Data Source={dbPath}"));
 
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<ContactSubmissionService>();
 builder.Services.AddScoped<SponsorshipSubmissionService>();
@@ -31,7 +33,8 @@ builder.Services.AddIdentity<AdminUser, IdentityRole>(options =>
     options.Password.RequiredLength = 8;
 })
 .AddEntityFrameworkStores<AppDbContext>()
-.AddDefaultTokenProviders();
+.AddDefaultTokenProviders()
+.AddClaimsPrincipalFactory<AdminUserClaimsPrincipalFactory>();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {

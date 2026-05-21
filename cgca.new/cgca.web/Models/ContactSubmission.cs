@@ -10,4 +10,6 @@ public class ContactSubmission
     public string Message { get; set; } = "";
     public DateTime SubmittedAt { get; set; }
     public bool IsRead { get; set; }
+    public bool IsAcknowledged { get; set; }
+    public List<ContactReply> Replies { get; set; } = [];
 }
