@@ -54,6 +54,7 @@
                                 <th>Email</th>
                                 <th>Subject</th>
                                 <th>Date</th>
+                                <th title="Acknowledged">Ack.</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -66,6 +67,12 @@
                                     <td>@c.Email</td>
                                     <td>@c.Subject</td>
                                     <td>@c.SubmittedAt.ToLocalTime().ToString("MM/dd/yyyy")</td>
+                                    <td>
+                                        @if (c.IsAcknowledged)
+                                        {
+                                            <i class="bi bi-check-circle-fill text-success" title="Acknowledged"></i>
+                                        }
+                                    </td>
                                     <td>
                                         <button class="btn btn-sm btn-outline-secondary me-1" title="@(c.IsRead ? "Mark Unread" : "Mark Read")"
                                                 @onclick="() => ToggleRead(c.Id)">

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using cgca.web.Data;
 
@@ -10,9 +11,11 @@ using cgca.web.Data;
 namespace cgca.web.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260521120828_AddContactAcknowledged")]
+    partial class AddContactAcknowledged
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.1");
@@ -212,33 +215,6 @@ namespace cgca.web.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("cgca.web.Models.ContactReply", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("ContactSubmissionId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime>("SentAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("SentBy")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ContactSubmissionId");
-
-                    b.ToTable("ContactReplies");
-                });
-
             modelBuilder.Entity("cgca.web.Models.ContactSubmission", b =>
                 {
                     b.Property<int>("Id")
@@ -375,22 +351,6 @@ namespace cgca.web.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("cgca.web.Models.ContactReply", b =>
-                {
-                    b.HasOne("cgca.web.Models.ContactSubmission", "ContactSubmission")
-                        .WithMany("Replies")
-                        .HasForeignKey("ContactSubmissionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ContactSubmission");
-                });
-
-            modelBuilder.Entity("cgca.web.Models.ContactSubmission", b =>
-                {
-                    b.Navigation("Replies");
                 });
 #pragma warning restore 612, 618
         }

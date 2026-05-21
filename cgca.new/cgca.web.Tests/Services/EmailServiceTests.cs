@@ -169,6 +169,52 @@ public class EmailServiceTests
         html.Should().Contain("&lt;script&gt;");
     }
 
+    // --- Contact reply ---
+
+    [Fact]
+    public void BuildContactReplyHtml_AddressesSubmitterByName()
+    {
+        var html = EmailService.BuildContactReplyHtml(MakeContact(name: "Jane Doe"), "Here is our response.");
+        html.Should().Contain("Dear Jane Doe");
+    }
+
+    [Fact]
+    public void BuildContactReplyHtml_ContainsReplyMessage()
+    {
+        var html = EmailService.BuildContactReplyHtml(MakeContact(), "We will follow up shortly.");
+        html.Should().Contain("We will follow up shortly.");
+    }
+
+    [Fact]
+    public void BuildContactReplyHtml_QuotesOriginalSubject()
+    {
+        var html = EmailService.BuildContactReplyHtml(MakeContact(subject: "Admissions Question"), "Reply here.");
+        html.Should().Contain("Admissions Question");
+    }
+
+    [Fact]
+    public void BuildContactReplyHtml_QuotesOriginalMessage()
+    {
+        var html = EmailService.BuildContactReplyHtml(MakeContact(message: "Original message text."), "Reply here.");
+        html.Should().Contain("Original message text.");
+    }
+
+    [Fact]
+    public void BuildContactReplyHtml_HtmlEncodesReplyMessage()
+    {
+        var html = EmailService.BuildContactReplyHtml(MakeContact(), "<script>alert('xss')</script>");
+        html.Should().NotContain("<script>");
+        html.Should().Contain("&lt;script&gt;");
+    }
+
+    [Fact]
+    public void BuildContactReplyHtml_HtmlEncodesOriginalMessage()
+    {
+        var html = EmailService.BuildContactReplyHtml(MakeContact(message: "<b>evil</b>"), "reply");
+        html.Should().NotContain("<b>evil</b>");
+        html.Should().Contain("&lt;b&gt;evil&lt;/b&gt;");
+    }
+
     // --- Sponsorship confirmation ---
 
     [Fact]

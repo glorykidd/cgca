@@ -10,6 +10,7 @@ public class AppDbContext : IdentityDbContext<AdminUser>
 
     public DbSet<ContactSubmission> ContactSubmissions => Set<ContactSubmission>();
     public DbSet<SponsorshipSubmission> SponsorshipSubmissions => Set<SponsorshipSubmission>();
+    public DbSet<ContactReply> ContactReplies => Set<ContactReply>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -27,6 +28,16 @@ public class AppDbContext : IdentityDbContext<AdminUser>
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => e.SubmittedAt).IsDescending();
             entity.HasIndex(e => e.IsRead);
+        });
+
+        modelBuilder.Entity<ContactReply>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.ContactSubmissionId);
+            entity.HasOne(e => e.ContactSubmission)
+                  .WithMany(e => e.Replies)
+                  .HasForeignKey(e => e.ContactSubmissionId)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

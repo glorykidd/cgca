@@ -35,6 +35,25 @@ public class ContactSubmissionService
     public async Task<ContactSubmission?> GetByIdAsync(int id) =>
         await _db.ContactSubmissions.FindAsync(id);
 
+    public async Task<ContactSubmission?> GetByIdWithRepliesAsync(int id) =>
+        await _db.ContactSubmissions
+            .Include(c => c.Replies.OrderBy(r => r.SentAt))
+            .FirstOrDefaultAsync(c => c.Id == id);
+
+    public async Task<ContactReply> AddReplyAsync(int submissionId, string message, string sentBy)
+    {
+        var reply = new ContactReply
+        {
+            ContactSubmissionId = submissionId,
+            Message = message,
+            SentBy = sentBy,
+            SentAt = DateTime.UtcNow
+        };
+        _db.ContactReplies.Add(reply);
+        await _db.SaveChangesAsync();
+        return reply;
+    }
+
     public async Task<(List<ContactSubmission> Items, int TotalCount)> SearchAsync(
         string? searchTerm, bool? isReadFilter, int page, int pageSize)
     {
@@ -72,6 +91,12 @@ public class ContactSubmissionService
     {
         var item = await _db.ContactSubmissions.FindAsync(id);
         if (item != null) { item.IsRead = !item.IsRead; await _db.SaveChangesAsync(); }
+    }
+
+    public async Task SetAcknowledgedAsync(int id, bool acknowledged)
+    {
+        var item = await _db.ContactSubmissions.FindAsync(id);
+        if (item != null) { item.IsAcknowledged = acknowledged; await _db.SaveChangesAsync(); }
     }
 
     public async Task<bool> DeleteAsync(int id)
