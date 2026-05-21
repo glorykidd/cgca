@@ -179,6 +179,70 @@ public class SubmissionServiceTests : IDisposable
         count.Should().Be(1);
     }
 
+    [Fact]
+    public async Task ContactSetAcknowledged_SetsFlag()
+    {
+        var submission = new ContactSubmission { Name = "Eve", Email = "eve@example.com", Subject = "S", Message = "M" };
+        await _contactService.SubmitAsync(submission);
+
+        await _contactService.SetAcknowledgedAsync(submission.Id, true);
+
+        (await _contactService.GetByIdAsync(submission.Id))!.IsAcknowledged.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task ContactSetAcknowledged_ClearsFlag()
+    {
+        var submission = new ContactSubmission { Name = "Eve", Email = "eve@example.com", Subject = "S", Message = "M", IsAcknowledged = true };
+        await _contactService.SubmitAsync(submission);
+
+        await _contactService.SetAcknowledgedAsync(submission.Id, false);
+
+        (await _contactService.GetByIdAsync(submission.Id))!.IsAcknowledged.Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task ContactAddReply_PersistsReply()
+    {
+        var submission = new ContactSubmission { Name = "Frank", Email = "frank@example.com", Subject = "S", Message = "M" };
+        await _contactService.SubmitAsync(submission);
+
+        var reply = await _contactService.AddReplyAsync(submission.Id, "Thank you for reaching out.", "Admin");
+
+        reply.Id.Should().BeGreaterThan(0);
+        reply.Message.Should().Be("Thank you for reaching out.");
+        reply.SentBy.Should().Be("Admin");
+        reply.SentAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
+    }
+
+    [Fact]
+    public async Task ContactGetByIdWithReplies_IncludesRepliesOrderedByTime()
+    {
+        var submission = new ContactSubmission { Name = "Grace", Email = "grace@example.com", Subject = "S", Message = "M" };
+        await _contactService.SubmitAsync(submission);
+        await _contactService.AddReplyAsync(submission.Id, "First reply", "Admin");
+        await _contactService.AddReplyAsync(submission.Id, "Second reply", "Admin");
+
+        var result = await _contactService.GetByIdWithRepliesAsync(submission.Id);
+
+        result.Should().NotBeNull();
+        result!.Replies.Should().HaveCount(2);
+        result.Replies[0].Message.Should().Be("First reply");
+        result.Replies[1].Message.Should().Be("Second reply");
+    }
+
+    [Fact]
+    public async Task ContactDelete_CascadesReplies()
+    {
+        var submission = new ContactSubmission { Name = "Hank", Email = "hank@example.com", Subject = "S", Message = "M" };
+        await _contactService.SubmitAsync(submission);
+        await _contactService.AddReplyAsync(submission.Id, "A reply", "Admin");
+
+        await _contactService.DeleteAsync(submission.Id);
+
+        _db.ContactReplies.Should().BeEmpty();
+    }
+
     // --- SponsorshipSubmissionService ---
 
     [Fact]
@@ -272,6 +336,8 @@ file class NoopEmailService : EmailService
 
     public override Task SendContactAdminNotificationAsync(cgca.web.Models.ContactSubmission _) => Task.CompletedTask;
     public override Task SendContactConfirmationAsync(cgca.web.Models.ContactSubmission _) => Task.CompletedTask;
+    public override Task SendContactReplyAsync(cgca.web.Models.ContactSubmission _, string __) => Task.CompletedTask;
+    public override Task ForwardContactSubmissionAsync(cgca.web.Models.ContactSubmission _, string __) => Task.CompletedTask;
     public override Task SendSponsorshipAdminNotificationAsync(cgca.web.Models.SponsorshipSubmission _) => Task.CompletedTask;
     public override Task SendSponsorshipConfirmationAsync(cgca.web.Models.SponsorshipSubmission _) => Task.CompletedTask;
 }

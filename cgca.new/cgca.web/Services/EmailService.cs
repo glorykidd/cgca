@@ -39,6 +39,28 @@ public class EmailService
         await SendAsync(submission.Email, submission.Name, subject, body);
     }
 
+    public virtual async Task SendContactReplyAsync(ContactSubmission submission, string replyMessage)
+    {
+        if (string.IsNullOrWhiteSpace(submission.Email))
+            return;
+
+        var subject = $"Re: {submission.Subject}";
+        var body = BuildContactReplyHtml(submission, replyMessage);
+
+        await SendAsync(submission.Email, submission.Name, subject, body);
+    }
+
+    public virtual async Task ForwardContactSubmissionAsync(ContactSubmission submission, string toAddress)
+    {
+        if (string.IsNullOrWhiteSpace(toAddress))
+            return;
+
+        var subject = $"Fwd: Contact Message from {submission.Name}";
+        var body = BuildContactAdminHtml(submission);
+
+        await SendAsync(toAddress, toAddress, subject, body);
+    }
+
     public virtual async Task SendSponsorshipAdminNotificationAsync(SponsorshipSubmission submission)
     {
         var adminEmail = _config["Email:AdminNotificationAddress"];
@@ -146,6 +168,33 @@ public class EmailService
                   <li>Email: <a href="mailto:contactus@cedargrovechristianacademy.org">contactus@cedargrovechristianacademy.org</a></li>
                 </ul>
                 <p style="margin-top: 32px;">Blessings,<br><strong>Cedar Grove Christian Academy</strong></p>
+              </div>
+              <div style="padding: 16px; text-align: center; background: #eee; font-size: 12px; color: #666;">
+                Cedar Grove Christian Academy · 4900 Cedar Grove Rd, Shepherdsville, KY 40165
+              </div>
+            </body>
+            </html>
+            """;
+    }
+
+    internal static string BuildContactReplyHtml(ContactSubmission s, string replyMessage)
+    {
+        return $"""
+            <!DOCTYPE html>
+            <html>
+            <body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+              <div style="background: #2d5016; padding: 20px; text-align: center;">
+                <h1 style="color: #fff; margin: 0; font-size: 20px;">Cedar Grove Christian Academy</h1>
+              </div>
+              <div style="padding: 24px;">
+                <p>Dear {Encode(s.Name)},</p>
+                <div style="white-space: pre-wrap;">{Encode(replyMessage)}</div>
+                <p style="margin-top: 32px;">Blessings,<br><strong>Cedar Grove Christian Academy</strong></p>
+              </div>
+              <div style="border-top: 1px solid #ddd; padding: 16px 24px; background: #f9f9f9; font-size: 12px; color: #888;">
+                <p style="margin: 0 0 4px;"><strong>Your original message:</strong></p>
+                <p style="margin: 0 0 2px;"><em>Subject: {Encode(s.Subject)}</em></p>
+                <p style="margin: 0; white-space: pre-wrap;">{Encode(s.Message)}</p>
               </div>
               <div style="padding: 16px; text-align: center; background: #eee; font-size: 12px; color: #666;">
                 Cedar Grove Christian Academy · 4900 Cedar Grove Rd, Shepherdsville, KY 40165

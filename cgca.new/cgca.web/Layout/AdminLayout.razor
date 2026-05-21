@@ -1,4 +1,6 @@
 @inherits LayoutComponentBase
+@using Microsoft.AspNetCore.Identity
+@using cgca.web.Models
 
 <nav class="navbar navbar-expand-sm navbar-dark admin-navbar">
     <div class="container-fluid">
@@ -25,7 +27,7 @@
                 <AuthorizeView>
                     <Authorized>
                         <a href="/admin/profile" class="text-light text-decoration-none me-2">
-                            <i class="bi bi-person-circle"></i> @context.User.Identity?.Name
+                            <i class="bi bi-person-circle"></i> @displayName
                         </a>
                     </Authorized>
                 </AuthorizeView>
@@ -41,3 +43,20 @@
 <div class="container mt-4 mb-4">
     @Body
 </div>
+
+@code {
+    [Inject] private UserManager<AdminUser> UserManager { get; set; } = default!;
+    [Inject] private IHttpContextAccessor HttpContextAccessor { get; set; } = default!;
+
+    private string displayName = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var userName = HttpContextAccessor.HttpContext?.User.Identity?.Name;
+        if (!string.IsNullOrWhiteSpace(userName))
+        {
+            var user = await UserManager.FindByNameAsync(userName);
+            displayName = (!string.IsNullOrWhiteSpace(user?.DisplayName) ? user.DisplayName : user?.UserName) ?? userName;
+        }
+    }
+}
