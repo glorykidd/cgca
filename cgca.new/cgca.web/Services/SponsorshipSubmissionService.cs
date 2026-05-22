@@ -35,6 +35,11 @@ public class SponsorshipSubmissionService
     public async Task<SponsorshipSubmission?> GetByIdAsync(int id) =>
         await _db.SponsorshipSubmissions.FindAsync(id);
 
+    public async Task<SponsorshipSubmission?> GetByIdWithNotesAsync(int id) =>
+        await _db.SponsorshipSubmissions
+            .Include(s => s.Notes.OrderBy(n => n.CreatedAt))
+            .FirstOrDefaultAsync(s => s.Id == id);
+
     public async Task<(List<SponsorshipSubmission> Items, int TotalCount)> SearchAsync(
         string? searchTerm, bool? isReadFilter, int page, int pageSize)
     {
@@ -73,6 +78,40 @@ public class SponsorshipSubmissionService
     {
         var item = await _db.SponsorshipSubmissions.FindAsync(id);
         if (item != null) { item.IsRead = !item.IsRead; await _db.SaveChangesAsync(); }
+    }
+
+    public async Task SetAcknowledgedAsync(int id, bool acknowledged)
+    {
+        var item = await _db.SponsorshipSubmissions.FindAsync(id);
+        if (item != null) { item.IsAcknowledged = acknowledged; await _db.SaveChangesAsync(); }
+    }
+
+    public async Task SetStatusAsync(int id, string field, bool value)
+    {
+        var item = await _db.SponsorshipSubmissions.FindAsync(id);
+        if (item == null) return;
+        switch (field)
+        {
+            case nameof(SponsorshipSubmission.IsContacted):    item.IsContacted    = value; break;
+            case nameof(SponsorshipSubmission.IsConfirmed):    item.IsConfirmed    = value; break;
+            case nameof(SponsorshipSubmission.IsAddedToSystem): item.IsAddedToSystem = value; break;
+            case nameof(SponsorshipSubmission.IsDeclined):     item.IsDeclined     = value; break;
+        }
+        await _db.SaveChangesAsync();
+    }
+
+    public async Task<SponsorshipNote> AddNoteAsync(int id, string message, string createdBy)
+    {
+        var note = new SponsorshipNote
+        {
+            SponsorshipSubmissionId = id,
+            Message = message,
+            CreatedBy = createdBy,
+            CreatedAt = DateTime.UtcNow
+        };
+        _db.SponsorshipNotes.Add(note);
+        await _db.SaveChangesAsync();
+        return note;
     }
 
     public async Task<bool> DeleteAsync(int id)

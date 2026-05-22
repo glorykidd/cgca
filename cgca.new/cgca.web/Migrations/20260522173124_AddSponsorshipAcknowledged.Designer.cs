@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using cgca.web.Data;
 
@@ -10,9 +11,11 @@ using cgca.web.Data;
 namespace cgca.web.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260522173124_AddSponsorshipAcknowledged")]
+    partial class AddSponsorshipAcknowledged
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.1");
@@ -283,33 +286,6 @@ namespace cgca.web.Migrations
                     b.ToTable("ContactSubmissions");
                 });
 
-            modelBuilder.Entity("cgca.web.Models.SponsorshipNote", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("SponsorshipSubmissionId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SponsorshipSubmissionId");
-
-                    b.ToTable("SponsorshipNotes");
-                });
-
             modelBuilder.Entity("cgca.web.Models.SponsorshipSubmission", b =>
                 {
                     b.Property<int>("Id")
@@ -328,18 +304,6 @@ namespace cgca.web.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsAcknowledged")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsAddedToSystem")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsConfirmed")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsContacted")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsDeclined")
                         .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsRead")
@@ -430,25 +394,9 @@ namespace cgca.web.Migrations
                     b.Navigation("ContactSubmission");
                 });
 
-            modelBuilder.Entity("cgca.web.Models.SponsorshipNote", b =>
-                {
-                    b.HasOne("cgca.web.Models.SponsorshipSubmission", "SponsorshipSubmission")
-                        .WithMany("Notes")
-                        .HasForeignKey("SponsorshipSubmissionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("SponsorshipSubmission");
-                });
-
             modelBuilder.Entity("cgca.web.Models.ContactSubmission", b =>
                 {
                     b.Navigation("Replies");
-                });
-
-            modelBuilder.Entity("cgca.web.Models.SponsorshipSubmission", b =>
-                {
-                    b.Navigation("Notes");
                 });
 #pragma warning restore 612, 618
         }

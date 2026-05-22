@@ -54,6 +54,8 @@
                                 <th>Contact</th>
                                 <th>Tier</th>
                                 <th>Date</th>
+                                <th title="Acknowledged">Ack.</th>
+                                <th>Progress</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -66,6 +68,44 @@
                                     <td>@s.ContactName</td>
                                     <td>@s.SponsorshipTier</td>
                                     <td>@s.SubmittedAt.ToLocalTime().ToString("MM/dd/yyyy")</td>
+                                    <td>
+                                        @if (s.IsAcknowledged)
+                                        {
+                                            <i class="bi bi-check-circle-fill text-success" title="Acknowledged"></i>
+                                        }
+                                    </td>
+                                    <td>
+                                        @{
+                                            string progressLabel;
+                                            string progressClass;
+                                            if (s.IsDeclined)
+                                            {
+                                                progressLabel = "Declined";
+                                                progressClass = "bg-danger";
+                                            }
+                                            else if (s.IsAddedToSystem)
+                                            {
+                                                progressLabel = "Added";
+                                                progressClass = "bg-success";
+                                            }
+                                            else if (s.IsConfirmed)
+                                            {
+                                                progressLabel = "Confirmed";
+                                                progressClass = "bg-primary";
+                                            }
+                                            else if (s.IsContacted)
+                                            {
+                                                progressLabel = "Contacted";
+                                                progressClass = "bg-info text-dark";
+                                            }
+                                            else
+                                            {
+                                                progressLabel = "New";
+                                                progressClass = "bg-secondary";
+                                            }
+                                        }
+                                        <span class="badge @progressClass">@progressLabel</span>
+                                    </td>
                                     <td>
                                         <button class="btn btn-sm btn-outline-secondary me-1" title="@(s.IsRead ? "Mark Unread" : "Mark Read")"
                                                 @onclick="() => ToggleRead(s.Id)">

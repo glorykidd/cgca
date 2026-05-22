@@ -11,4 +11,10 @@ public class SponsorshipSubmission
     public string? Message { get; set; }
     public DateTime SubmittedAt { get; set; }
     public bool IsRead { get; set; }
+    public bool IsAcknowledged { get; set; }
+    public bool IsContacted { get; set; }
+    public bool IsConfirmed { get; set; }
+    public bool IsAddedToSystem { get; set; }
+    public bool IsDeclined { get; set; }
+    public List<SponsorshipNote> Notes { get; set; } = [];
 }
