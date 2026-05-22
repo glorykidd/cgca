@@ -273,8 +273,9 @@ else
         try
         {
             await EmailService.ForwardContactSubmissionAsync(item!, forwardAddress.Trim());
-            forwardSuccess = true;
             forwardAddress = "";
+            forwardError = null;
+            showForward = false;
         }
         finally
         {

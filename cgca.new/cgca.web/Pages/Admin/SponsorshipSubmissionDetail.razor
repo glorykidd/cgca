@@ -4,6 +4,7 @@
 @rendermode InteractiveServer
 @using cgca.web.Services
 @using cgca.web.Models
+@using Microsoft.AspNetCore.Components.Authorization
 
 <PageTitle>Sponsorship Inquiry - CGCA Admin</PageTitle>
 
@@ -49,6 +50,17 @@ else
                         </span>
                     </p>
                 </div>
+                <div class="col-md-6">
+                    <strong>Acknowledged:</strong>
+                    <div class="form-check mt-1">
+                        <input class="form-check-input" type="checkbox" id="acknowledgedCheck"
+                               checked="@item.IsAcknowledged"
+                               @onchange="ToggleAcknowledged" />
+                        <label class="form-check-label" for="acknowledgedCheck">
+                            @(item.IsAcknowledged ? "Inquiry has been reviewed" : "Mark as reviewed")
+                        </label>
+                    </div>
+                </div>
                 @if (!string.IsNullOrEmpty(item.Message))
                 {
                     <div class="col-12">
@@ -64,11 +76,90 @@ else
         </div>
     </div>
 
-    <div class="d-flex gap-2">
+    <div class="card mb-4">
+        <div class="card-header fw-semibold">Contact Tracking</div>
+        <div class="card-body">
+            <div class="row g-2">
+                <div class="col-md-3 col-6">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="contactedCheck"
+                               checked="@item.IsContacted"
+                               @onchange='e => SetStatus("IsContacted", e)' />
+                        <label class="form-check-label" for="contactedCheck">Contacted</label>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="confirmedCheck"
+                               checked="@item.IsConfirmed"
+                               @onchange='e => SetStatus("IsConfirmed", e)' />
+                        <label class="form-check-label" for="confirmedCheck">Confirmed</label>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="declinedCheck"
+                               checked="@item.IsDeclined"
+                               @onchange='e => SetStatus("IsDeclined", e)' />
+                        <label class="form-check-label" for="declinedCheck">Declined</label>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="addedCheck"
+                               checked="@item.IsAddedToSystem"
+                               @onchange='e => SetStatus("IsAddedToSystem", e)' />
+                        <label class="form-check-label" for="addedCheck">Added to System</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex gap-2 mb-4">
         <button class="btn btn-outline-primary" @onclick="ToggleRead">
             @(item.IsRead ? "Mark as Unread" : "Mark as Read")
         </button>
         <button class="btn btn-outline-danger" @onclick="() => showDeleteConfirm = true">Delete</button>
+    </div>
+
+    <h5 class="mb-3">Notes</h5>
+
+    @if (item.Notes.Count == 0)
+    {
+        <p class="text-muted small mb-3">No notes yet.</p>
+    }
+    else
+    {
+        <div class="d-flex flex-column gap-2 mb-3">
+            @foreach (var note in item.Notes)
+            {
+                <div class="card border-start border-3 border-info">
+                    <div class="card-body py-2 px-3">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="fw-semibold small">@note.CreatedBy</span>
+                            <span class="text-muted small">@note.CreatedAt.ToLocalTime().ToString("MMM dd, yyyy 'at' h:mm tt")</span>
+                        </div>
+                        <p class="mb-0 small" style="white-space: pre-wrap;">@note.Message</p>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <div class="card">
+        <div class="card-body">
+            <label class="form-label fw-semibold" for="noteText">Add a Note</label>
+            <textarea id="noteText" class="form-control mb-2" rows="4"
+                      @bind="noteText" placeholder="Enter notes about contact with this sponsor..."></textarea>
+            @if (noteError != null)
+            {
+                <div class="text-danger small mb-2">@noteError</div>
+            }
+            <button class="btn btn-primary" @onclick="SaveNote" disabled="@noteSaving">
+                @(noteSaving ? "Saving…" : "Save Note")
+            </button>
+        </div>
     </div>
 }
 
@@ -96,13 +187,23 @@ else
     [Parameter] public int Id { get; set; }
     [Inject] private SponsorshipSubmissionService SubmissionService { get; set; } = default!;
     [Inject] private NavigationManager Nav { get; set; } = default!;
+    [CascadingParameter] private AuthenticationState AuthState { get; set; } = default!;
 
     private SponsorshipSubmission? item;
+    private string currentUserName = "Admin";
     private bool showDeleteConfirm;
+
+    private string noteText = "";
+    private string? noteError;
+    private bool noteSaving;
 
     protected override async Task OnInitializedAsync()
     {
-        item = await SubmissionService.GetByIdAsync(Id);
+        currentUserName = AuthState?.User.FindFirst("display_name")?.Value
+            ?? AuthState?.User.Identity?.Name
+            ?? "Admin";
+
+        item = await SubmissionService.GetByIdWithNotesAsync(Id);
         if (item != null && !item.IsRead)
         {
             await SubmissionService.MarkAsReadAsync(Id);
@@ -115,6 +216,51 @@ else
         if (item == null) return;
         await SubmissionService.ToggleReadAsync(Id);
         item.IsRead = !item.IsRead;
+    }
+
+    private async Task ToggleAcknowledged(ChangeEventArgs e)
+    {
+        if (item == null) return;
+        var acknowledged = (bool)(e.Value ?? false);
+        await SubmissionService.SetAcknowledgedAsync(Id, acknowledged);
+        item.IsAcknowledged = acknowledged;
+    }
+
+    private async Task SetStatus(string field, ChangeEventArgs e)
+    {
+        if (item == null) return;
+        var value = (bool)(e.Value ?? false);
+        await SubmissionService.SetStatusAsync(Id, field, value);
+        switch (field)
+        {
+            case nameof(SponsorshipSubmission.IsContacted):     item.IsContacted     = value; break;
+            case nameof(SponsorshipSubmission.IsConfirmed):     item.IsConfirmed     = value; break;
+            case nameof(SponsorshipSubmission.IsAddedToSystem): item.IsAddedToSystem = value; break;
+            case nameof(SponsorshipSubmission.IsDeclined):      item.IsDeclined      = value; break;
+        }
+    }
+
+    private async Task SaveNote()
+    {
+        noteError = null;
+
+        if (string.IsNullOrWhiteSpace(noteText))
+        {
+            noteError = "Please enter a note before saving.";
+            return;
+        }
+
+        noteSaving = true;
+        try
+        {
+            var note = await SubmissionService.AddNoteAsync(Id, noteText.Trim(), currentUserName);
+            item!.Notes.Add(note);
+            noteText = "";
+        }
+        finally
+        {
+            noteSaving = false;
+        }
     }
 
     private async Task ExecuteDelete()

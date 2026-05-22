@@ -11,6 +11,7 @@ public class AppDbContext : IdentityDbContext<AdminUser>
     public DbSet<ContactSubmission> ContactSubmissions => Set<ContactSubmission>();
     public DbSet<SponsorshipSubmission> SponsorshipSubmissions => Set<SponsorshipSubmission>();
     public DbSet<ContactReply> ContactReplies => Set<ContactReply>();
+    public DbSet<SponsorshipNote> SponsorshipNotes => Set<SponsorshipNote>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -37,6 +38,16 @@ public class AppDbContext : IdentityDbContext<AdminUser>
             entity.HasOne(e => e.ContactSubmission)
                   .WithMany(e => e.Replies)
                   .HasForeignKey(e => e.ContactSubmissionId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<SponsorshipNote>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.SponsorshipSubmissionId);
+            entity.HasOne(e => e.SponsorshipSubmission)
+                  .WithMany(e => e.Notes)
+                  .HasForeignKey(e => e.SponsorshipSubmissionId)
                   .OnDelete(DeleteBehavior.Cascade);
         });
     }
