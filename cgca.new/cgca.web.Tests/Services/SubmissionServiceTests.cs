@@ -327,6 +327,105 @@ public class SubmissionServiceTests : IDisposable
 
         count.Should().Be(1);
     }
+
+    [Fact]
+    public async Task SponsorshipSetAcknowledged_SetsFlag()
+    {
+        var submission = new SponsorshipSubmission { ContactName = "Alice", Email = "a@a.com", SponsorshipTier = "Gold" };
+        await _sponsorshipService.SubmitAsync(submission);
+
+        await _sponsorshipService.SetAcknowledgedAsync(submission.Id, true);
+
+        (await _sponsorshipService.GetByIdAsync(submission.Id))!.IsAcknowledged.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task SponsorshipSetAcknowledged_ClearsFlag()
+    {
+        var submission = new SponsorshipSubmission { ContactName = "Alice", Email = "a@a.com", SponsorshipTier = "Gold", IsAcknowledged = true };
+        await _sponsorshipService.SubmitAsync(submission);
+
+        await _sponsorshipService.SetAcknowledgedAsync(submission.Id, false);
+
+        (await _sponsorshipService.GetByIdAsync(submission.Id))!.IsAcknowledged.Should().BeFalse();
+    }
+
+    [Theory]
+    [InlineData("IsContacted")]
+    [InlineData("IsConfirmed")]
+    [InlineData("IsAddedToSystem")]
+    [InlineData("IsDeclined")]
+    public async Task SponsorshipSetStatus_SetsEachFlag(string field)
+    {
+        var submission = new SponsorshipSubmission { ContactName = "Bob", Email = "b@b.com", SponsorshipTier = "Silver" };
+        await _sponsorshipService.SubmitAsync(submission);
+
+        await _sponsorshipService.SetStatusAsync(submission.Id, field, true);
+
+        var updated = await _sponsorshipService.GetByIdAsync(submission.Id);
+        var prop = typeof(SponsorshipSubmission).GetProperty(field)!;
+        ((bool)prop.GetValue(updated)!).Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineData("IsContacted")]
+    [InlineData("IsConfirmed")]
+    [InlineData("IsAddedToSystem")]
+    [InlineData("IsDeclined")]
+    public async Task SponsorshipSetStatus_ClearsEachFlag(string field)
+    {
+        var submission = new SponsorshipSubmission { ContactName = "Bob", Email = "b@b.com", SponsorshipTier = "Silver" };
+        var prop = typeof(SponsorshipSubmission).GetProperty(field)!;
+        prop.SetValue(submission, true);
+        await _sponsorshipService.SubmitAsync(submission);
+
+        await _sponsorshipService.SetStatusAsync(submission.Id, field, false);
+
+        var updated = await _sponsorshipService.GetByIdAsync(submission.Id);
+        ((bool)prop.GetValue(updated)!).Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task SponsorshipAddNote_PersistsNote()
+    {
+        var submission = new SponsorshipSubmission { ContactName = "Carol", Email = "c@c.com", SponsorshipTier = "Gold" };
+        await _sponsorshipService.SubmitAsync(submission);
+
+        var note = await _sponsorshipService.AddNoteAsync(submission.Id, "Called and left voicemail.", "Admin");
+
+        note.Id.Should().BeGreaterThan(0);
+        note.Message.Should().Be("Called and left voicemail.");
+        note.CreatedBy.Should().Be("Admin");
+        note.CreatedAt.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
+    }
+
+    [Fact]
+    public async Task SponsorshipGetByIdWithNotes_IncludesNotesOrderedByTime()
+    {
+        var submission = new SponsorshipSubmission { ContactName = "Dave", Email = "d@d.com", SponsorshipTier = "Bronze" };
+        await _sponsorshipService.SubmitAsync(submission);
+        await _sponsorshipService.AddNoteAsync(submission.Id, "First note", "Admin");
+        await _sponsorshipService.AddNoteAsync(submission.Id, "Second note", "Admin");
+
+        var result = await _sponsorshipService.GetByIdWithNotesAsync(submission.Id);
+
+        result.Should().NotBeNull();
+        result!.Notes.Should().HaveCount(2);
+        result.Notes[0].Message.Should().Be("First note");
+        result.Notes[1].Message.Should().Be("Second note");
+    }
+
+    [Fact]
+    public async Task SponsorshipDelete_CascadesNotes()
+    {
+        var submission = new SponsorshipSubmission { ContactName = "Eve", Email = "e@e.com", SponsorshipTier = "Gold" };
+        await _sponsorshipService.SubmitAsync(submission);
+        await _sponsorshipService.AddNoteAsync(submission.Id, "A note", "Admin");
+
+        await _sponsorshipService.DeleteAsync(submission.Id);
+
+        _db.SponsorshipNotes.Should().BeEmpty();
+    }
 }
 
 // Minimal no-op subclass so tests don't need real config or SMTP
