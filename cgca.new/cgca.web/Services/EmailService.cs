@@ -61,6 +61,17 @@ public class EmailService
         await SendAsync(toAddress, toAddress, subject, body);
     }
 
+    public virtual async Task ForwardSponsorshipSubmissionAsync(SponsorshipSubmission submission, string toAddress)
+    {
+        if (string.IsNullOrWhiteSpace(toAddress))
+            return;
+
+        var subject = $"Fwd: Sponsorship Inquiry from {submission.BusinessName}";
+        var body = BuildSponsorshipAdminHtml(submission);
+
+        await SendAsync(toAddress, toAddress, subject, body);
+    }
+
     public virtual async Task SendSponsorshipAdminNotificationAsync(SponsorshipSubmission submission)
     {
         var adminEmail = _config["Email:AdminNotificationAddress"];

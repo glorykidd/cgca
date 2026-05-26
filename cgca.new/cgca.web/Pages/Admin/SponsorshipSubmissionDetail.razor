@@ -120,6 +120,7 @@ else
         <button class="btn btn-outline-primary" @onclick="ToggleRead">
             @(item.IsRead ? "Mark as Unread" : "Mark as Read")
         </button>
+        <button class="btn btn-outline-secondary" @onclick="() => showForward = true">Forward</button>
         <button class="btn btn-outline-danger" @onclick="() => showDeleteConfirm = true">Delete</button>
     </div>
 
@@ -163,6 +164,33 @@ else
     </div>
 }
 
+@if (showForward)
+{
+    <div class="modal d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Forward Inquiry</h5>
+                </div>
+                <div class="modal-body">
+                    <label class="form-label" for="forwardTo">Forward to email address</label>
+                    <input id="forwardTo" type="email" class="form-control" @bind="forwardAddress" placeholder="recipient@example.com" />
+                    @if (forwardError != null)
+                    {
+                        <div class="text-danger small mt-1">@forwardError</div>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="CloseForward">Cancel</button>
+                    <button class="btn btn-primary" @onclick="ExecuteForward" disabled="@forwardSending">
+                        @(forwardSending ? "Sending…" : "Send")
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 @if (showDeleteConfirm)
 {
     <div class="modal d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
@@ -186,12 +214,18 @@ else
 @code {
     [Parameter] public int Id { get; set; }
     [Inject] private SponsorshipSubmissionService SubmissionService { get; set; } = default!;
+    [Inject] private EmailService EmailService { get; set; } = default!;
     [Inject] private NavigationManager Nav { get; set; } = default!;
     [CascadingParameter] private AuthenticationState AuthState { get; set; } = default!;
 
     private SponsorshipSubmission? item;
     private string currentUserName = "Admin";
     private bool showDeleteConfirm;
+
+    private bool showForward;
+    private string forwardAddress = "";
+    private string? forwardError;
+    private bool forwardSending;
 
     private string noteText = "";
     private string? noteError;
@@ -251,6 +285,7 @@ else
         }
 
         noteSaving = true;
+        StateHasChanged();
         try
         {
             var note = await SubmissionService.AddNoteAsync(Id, noteText.Trim(), currentUserName);
@@ -261,6 +296,41 @@ else
         {
             noteSaving = false;
         }
+    }
+
+    private async Task ExecuteForward()
+    {
+        forwardError = null;
+
+        if (string.IsNullOrWhiteSpace(forwardAddress) || !forwardAddress.Contains('@'))
+        {
+            forwardError = "Please enter a valid email address.";
+            return;
+        }
+
+        forwardSending = true;
+        StateHasChanged();
+        try
+        {
+            var trimmed = forwardAddress.Trim();
+            await EmailService.ForwardSponsorshipSubmissionAsync(item!, trimmed);
+            var note = await SubmissionService.AddNoteAsync(Id, $"Inquiry forwarded to {trimmed}.", currentUserName);
+            item!.Notes.Add(note);
+            forwardAddress = "";
+            forwardError = null;
+            showForward = false;
+        }
+        finally
+        {
+            forwardSending = false;
+        }
+    }
+
+    private void CloseForward()
+    {
+        showForward = false;
+        forwardAddress = "";
+        forwardError = null;
     }
 
     private async Task ExecuteDelete()
