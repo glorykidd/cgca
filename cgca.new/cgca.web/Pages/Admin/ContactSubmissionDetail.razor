@@ -238,6 +238,7 @@ else
         }
 
         replySending = true;
+        StateHasChanged();
         try
         {
             await EmailService.SendContactReplyAsync(item!, replyText.Trim());
@@ -270,9 +271,13 @@ else
         }
 
         forwardSending = true;
+        StateHasChanged();
         try
         {
-            await EmailService.ForwardContactSubmissionAsync(item!, forwardAddress.Trim());
+            var trimmed = forwardAddress.Trim();
+            await EmailService.ForwardContactSubmissionAsync(item!, trimmed);
+            var reply = await SubmissionService.AddReplyAsync(Id, $"Message forwarded to {trimmed}.", currentUserName);
+            item!.Replies.Add(reply);
             forwardAddress = "";
             forwardError = null;
             showForward = false;
