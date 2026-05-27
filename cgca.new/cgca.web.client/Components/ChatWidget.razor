@@ -116,6 +116,16 @@
     private List<ChatMessage> messages = new();
     private ElementReference messagesContainer;
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            isOpen = true;
+            StateHasChanged();
+            try { await JS.InvokeVoidAsync("cgcaTrack", "chatbot_open"); } catch { }
+        }
+    }
+
     private async Task ToggleChat()
     {
         isOpen = !isOpen;

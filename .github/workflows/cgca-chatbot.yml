@@ -1,0 +1,30 @@
+name: Deploy Chatbot Worker
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "cgca.new/cgca-chatbot-worker/**"
+      - ".github/workflows/cgca-chatbot.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: chatbot-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy-chatbot:
+    name: Deploy to Cloudflare Workers
+    runs-on: [ self-hosted ]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: cgca.new/cgca-chatbot-worker
+
+      - name: Deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: npx wrangler deploy
+        working-directory: cgca.new/cgca-chatbot-worker
