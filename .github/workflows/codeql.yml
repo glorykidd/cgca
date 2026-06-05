@@ -32,7 +32,7 @@ jobs:
           build-mode: manual
 
       - name: Build
-        run: dotnet build gkweb.new.sln --no-incremental
+        run: dotnet build cgca.new/cgca.sln --no-incremental
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
