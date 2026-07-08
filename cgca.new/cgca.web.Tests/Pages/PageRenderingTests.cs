@@ -1,6 +1,7 @@
 using Bunit;
 using cgca.web.Pages;
 using FluentAssertions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -16,6 +17,8 @@ public class PageRenderingTests : BunitContext
         Services.AddBlazorBootstrap();
         Services.AddSingleton<cgca.web.Services.ContactSubmissionService, StubContactSubmissionService>();
         Services.AddSingleton<cgca.web.Services.SponsorshipSubmissionService, StubSponsorshipSubmissionService>();
+        Services.AddSingleton<cgca.web.Services.TurnstileService, StubTurnstileService>();
+        Services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         JSInterop.Mode = JSRuntimeMode.Loose;
     }
 

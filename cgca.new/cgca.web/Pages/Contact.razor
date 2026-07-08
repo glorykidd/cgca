@@ -159,6 +159,14 @@
             <ValidationMessage For="() => form.Message" />
           </div>
 
+          <div class="mb-3">
+            <div id="@turnstileContainerId"></div>
+            @if (captchaError)
+            {
+              <div class="text-danger small mt-1">Please complete the verification challenge.</div>
+            }
+          </div>
+
           <div class="text-center">
             <button type="submit" class="btn btn-success btn-lg btn-rounded" disabled="@submitting">
               @if (submitting)
@@ -177,6 +185,12 @@
 
 @code {
     [Inject] private ContactSubmissionService SubmissionService { get; set; } = default!;
+    [Inject] private TurnstileService Turnstile { get; set; } = default!;
+    [Inject] private IConfiguration Configuration { get; set; } = default!;
+    [Inject] private IJSRuntime JS { get; set; } = default!;
+
+    private readonly string turnstileContainerId = $"turnstile-contact-{Guid.NewGuid():N}";
+    private bool captchaError;
 
     private ContactForm form = new();
     private bool submitted;
@@ -185,6 +199,15 @@
     private bool subjectError;
     private bool otherSubjectError;
     private string submittedName = "";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var siteKey = Configuration["Turnstile:SiteKey"];
+            await JS.InvokeVoidAsync("cgcaTurnstile.render", turnstileContainerId, siteKey);
+        }
+    }
 
     private static readonly string[] SubjectOptions =
     [
@@ -213,6 +236,16 @@
 
         if (subjectError || otherSubjectError) return;
 
+        var captchaToken = await JS.InvokeAsync<string?>("cgcaTurnstile.getToken", turnstileContainerId);
+        var captchaValid = await Turnstile.VerifyAsync(captchaToken);
+        if (!captchaValid)
+        {
+            captchaError = true;
+            await JS.InvokeVoidAsync("cgcaTurnstile.reset", turnstileContainerId);
+            return;
+        }
+        captchaError = false;
+
         submitting = true;
         submitError = false;
 
@@ -231,6 +264,7 @@
 
         var success = await SubmissionService.SubmitAsync(submission);
         submitting = false;
+        await JS.InvokeVoidAsync("cgcaTurnstile.reset", turnstileContainerId);
 
         if (success)
         {
