@@ -3,6 +3,7 @@ using cgca.web;
 using cgca.web.Pages;
 using cgca.web.client.Services;
 using FluentAssertions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -20,6 +21,8 @@ public class RoutingTests : BunitContext
         Services.AddSingleton<IChatService, StubChatService>();
         Services.AddSingleton<cgca.web.Services.ContactSubmissionService, StubContactSubmissionService>();
         Services.AddSingleton<cgca.web.Services.SponsorshipSubmissionService, StubSponsorshipSubmissionService>();
+        Services.AddSingleton<cgca.web.Services.TurnstileService, StubTurnstileService>();
+        Services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
         JSInterop.Mode = JSRuntimeMode.Loose;
     }
 

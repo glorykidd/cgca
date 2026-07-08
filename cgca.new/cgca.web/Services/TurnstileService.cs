@@ -17,7 +17,7 @@ public class TurnstileService
         _logger = logger;
     }
 
-    public async Task<bool> VerifyAsync(string? token, string? remoteIp = null)
+    public virtual async Task<bool> VerifyAsync(string? token, string? remoteIp = null)
     {
         if (string.IsNullOrWhiteSpace(token))
             return false;
