@@ -24,6 +24,9 @@
                     <label for="password" class="form-label">Password</label>
                     <input type="password" class="form-control" id="password" name="password" required />
                 </div>
+                <div class="mb-3">
+                    <div class="cf-turnstile" data-sitekey="@SiteKey"></div>
+                </div>
                 <button type="submit" class="btn btn-primary w-100">Sign In</button>
             </form>
         </div>
@@ -32,6 +35,9 @@
 
 @code {
     [Inject] private NavigationManager NavigationManager { get; set; } = default!;
+    [Inject] private IConfiguration Configuration { get; set; } = default!;
+
+    private string? SiteKey => Configuration["Turnstile:SiteKey"];
 }
 
 @using Microsoft.AspNetCore.WebUtilities

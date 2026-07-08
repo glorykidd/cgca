@@ -23,6 +23,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<EmailService>();
 builder.Services.AddScoped<ContactSubmissionService>();
 builder.Services.AddScoped<SponsorshipSubmissionService>();
+builder.Services.AddHttpClient<TurnstileService>();
 
 builder.Services.AddIdentity<AdminUser, IdentityRole>(options =>
 {
