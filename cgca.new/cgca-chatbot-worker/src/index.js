@@ -1,5 +1,12 @@
 import { SYSTEM_PROMPT } from "./systemPrompt.js";
-import { checkSessionLimit, incrementSessionCount, checkIpRate, sessionExists } from "./rateLimit.js";
+import {
+  checkSessionLimit,
+  incrementSessionCount,
+  checkIpRate,
+  sessionExists,
+  hasSubmittedLead,
+  markLeadSubmitted,
+} from "./rateLimit.js";
 import { getCachedResponse, maybeCacheResponse } from "./cache.js";
 
 const ALLOWED_ORIGINS = [
@@ -158,8 +165,16 @@ async function handleLeads(request, env) {
     return jsonResponse({ success: false, error: "Invalid session." }, 400, cors);
   }
 
+  // A session can only submit one lead, so a harvested sessionId can't be
+  // replayed across IPs to bypass the per-IP cooldown above
+  if (await hasSubmittedLead(env, sessionId)) {
+    return jsonResponse({ success: false, error: "Lead already submitted for this session." }, 429, cors);
+  }
+
   const timestamp = new Date().toISOString();
   const leadData = { name, email, sessionId, timestamp };
+
+  await markLeadSubmitted(env, sessionId);
 
   // Forward to Google Sheets via Apps Script webhook
   if (env.GOOGLE_SHEETS_WEBHOOK_URL) {
@@ -178,7 +193,7 @@ async function handleLeads(request, env) {
   }
 
   // Fallback: store in KV if Google Sheets is unavailable or not configured
-  const leadKey = `lead:${sessionId || "unknown"}:${timestamp}`;
+  const leadKey = `lead:${sessionId}:${timestamp}`;
   await env.CHAT_CACHE.put(leadKey, JSON.stringify(leadData), { expirationTtl: 7776000 });
 
   return jsonResponse({ success: true }, 200, cors);

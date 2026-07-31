@@ -38,6 +38,26 @@ export async function sessionExists(env, sessionId) {
 }
 
 /**
+ * Check whether a session has already submitted a lead. Prevents a single
+ * harvested sessionId from being replayed to submit unlimited leads across
+ * different IPs, since each IP gets its own independent cooldown.
+ */
+export async function hasSubmittedLead(env, sessionId) {
+  const key = `lead-submitted:${sessionId}`;
+  const raw = await env.RATE_LIMIT.get(key);
+  return raw !== null;
+}
+
+/**
+ * Mark a session as having submitted a lead.
+ */
+export async function markLeadSubmitted(env, sessionId) {
+  const key = `lead-submitted:${sessionId}`;
+  // Same 24-hour window as the session's own message-count TTL.
+  await env.RATE_LIMIT.put(key, "1", { expirationTtl: 86400 });
+}
+
+/**
  * Check if an IP is sending requests too quickly (1 req per 2 seconds).
  * `scope` namespaces the cooldown per endpoint so a chat request and a
  * lead submission from the same IP don't contend for the same window.
