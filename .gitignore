@@ -423,3 +423,6 @@ appsettings.Production.json
 cgca.new/cgca.web/Data/*.db
 cgca.new/cgca.web/Data/*.db-shm
 cgca.new/cgca.web/Data/*.db-wal
+
+# Claude Code local settings (machine-specific permissions)
+.claude/settings.local.json
