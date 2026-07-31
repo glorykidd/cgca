@@ -98,12 +98,17 @@ public class AuthEndpointsTests : IClassFixture<AuthEndpointsTestFactory>
     [Fact]
     public async Task Login_WithWrongPassword_RedirectsToLoginWithError()
     {
+        // Uses its own user rather than the shared seeded admin, so a failed attempt
+        // here can never combine with another test's failures to trip account lockout.
+        const string username = "wrong-password-test-user";
         var client = CreateClient();
+        await SeedAdditionalUserAsync(username, "Correct@Password123!");
+
         var (token, cookie) = await GetAntiforgeryTokenAsync(client, "/admin/login");
 
         var request = new HttpRequestMessage(HttpMethod.Post, "/api/auth/login")
         {
-            Content = BuildLoginForm(token, AuthEndpointsTestFactory.AdminUsername, "WrongPassword!1"),
+            Content = BuildLoginForm(token, username, "WrongPassword!1"),
         };
         request.Headers.Add("Cookie", cookie);
 
