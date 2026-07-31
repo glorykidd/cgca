@@ -24,11 +24,47 @@ export async function incrementSessionCount(env, sessionId) {
 }
 
 /**
+ * Check whether a session has ever sent a message through /api/chat.
+ * Used, alongside the leads-scoped IP cooldown, to reject lead submissions
+ * for session IDs /api/chat never saw. Workers KV is eventually consistent,
+ * so a lead submitted immediately after a session's first chat message could
+ * see a stale read here; in practice the time a user spends typing their
+ * name/email is enough for the write to propagate.
+ */
+export async function sessionExists(env, sessionId) {
+  const key = `session:${sessionId}`;
+  const raw = await env.RATE_LIMIT.get(key);
+  return raw !== null;
+}
+
+/**
+ * Check whether a session has already submitted a lead. Prevents a single
+ * harvested sessionId from being replayed to submit unlimited leads across
+ * different IPs, since each IP gets its own independent cooldown.
+ */
+export async function hasSubmittedLead(env, sessionId) {
+  const key = `lead-submitted:${sessionId}`;
+  const raw = await env.RATE_LIMIT.get(key);
+  return raw !== null;
+}
+
+/**
+ * Mark a session as having submitted a lead.
+ */
+export async function markLeadSubmitted(env, sessionId) {
+  const key = `lead-submitted:${sessionId}`;
+  // Same 24-hour window as the session's own message-count TTL.
+  await env.RATE_LIMIT.put(key, "1", { expirationTtl: 86400 });
+}
+
+/**
  * Check if an IP is sending requests too quickly (1 req per 2 seconds).
+ * `scope` namespaces the cooldown per endpoint so a chat request and a
+ * lead submission from the same IP don't contend for the same window.
  * Returns { allowed: boolean }
  */
-export async function checkIpRate(env, ip) {
-  const key = `ip:${ip}`;
+export async function checkIpRate(env, ip, scope = "chat") {
+  const key = `ip:${scope}:${ip}`;
   const lastRequest = await env.RATE_LIMIT.get(key);
   if (lastRequest) {
     const elapsed = Date.now() - parseInt(lastRequest, 10);
