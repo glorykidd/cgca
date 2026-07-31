@@ -1,5 +1,5 @@
 import { SYSTEM_PROMPT } from "./systemPrompt.js";
-import { checkSessionLimit, incrementSessionCount, checkIpRate } from "./rateLimit.js";
+import { checkSessionLimit, incrementSessionCount, checkIpRate, sessionExists } from "./rateLimit.js";
 import { getCachedResponse, maybeCacheResponse } from "./cache.js";
 
 const ALLOWED_ORIGINS = [
@@ -133,6 +133,13 @@ async function handleChat(request, env) {
  */
 async function handleLeads(request, env) {
   const cors = getCorsHeaders(request);
+  const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+
+  // Rate limit by IP
+  const ipCheck = await checkIpRate(env, ip, "leads");
+  if (!ipCheck.allowed) {
+    return jsonResponse({ success: false, error: "Too many requests." }, 429, cors);
+  }
 
   let body;
   try {
@@ -144,6 +151,11 @@ async function handleLeads(request, env) {
   const { name, email, sessionId } = body;
   if (!name || !email) {
     return jsonResponse({ success: false, error: "Name and email are required." }, 400, cors);
+  }
+
+  // Only accept leads tied to a session that has actually chatted first
+  if (!sessionId || !(await sessionExists(env, sessionId))) {
+    return jsonResponse({ success: false, error: "Invalid session." }, 400, cors);
   }
 
   const timestamp = new Date().toISOString();

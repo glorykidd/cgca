@@ -24,11 +24,24 @@ export async function incrementSessionCount(env, sessionId) {
 }
 
 /**
+ * Check whether a session has ever sent a message through /api/chat.
+ * Used to reject lead submissions from session IDs the chat endpoint
+ * never rate-limited, since /api/leads has no rate limiting of its own.
+ */
+export async function sessionExists(env, sessionId) {
+  const key = `session:${sessionId}`;
+  const raw = await env.RATE_LIMIT.get(key);
+  return raw !== null;
+}
+
+/**
  * Check if an IP is sending requests too quickly (1 req per 2 seconds).
+ * `scope` namespaces the cooldown per endpoint so a chat request and a
+ * lead submission from the same IP don't contend for the same window.
  * Returns { allowed: boolean }
  */
-export async function checkIpRate(env, ip) {
-  const key = `ip:${ip}`;
+export async function checkIpRate(env, ip, scope = "chat") {
+  const key = `ip:${scope}:${ip}`;
   const lastRequest = await env.RATE_LIMIT.get(key);
   if (lastRequest) {
     const elapsed = Date.now() - parseInt(lastRequest, 10);
