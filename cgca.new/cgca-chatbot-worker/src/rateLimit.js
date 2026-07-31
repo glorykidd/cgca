@@ -25,8 +25,11 @@ export async function incrementSessionCount(env, sessionId) {
 
 /**
  * Check whether a session has ever sent a message through /api/chat.
- * Used to reject lead submissions from session IDs the chat endpoint
- * never rate-limited, since /api/leads has no rate limiting of its own.
+ * Used, alongside the leads-scoped IP cooldown, to reject lead submissions
+ * for session IDs /api/chat never saw. Workers KV is eventually consistent,
+ * so a lead submitted immediately after a session's first chat message could
+ * see a stale read here; in practice the time a user spends typing their
+ * name/email is enough for the write to propagate.
  */
 export async function sessionExists(env, sessionId) {
   const key = `session:${sessionId}`;
