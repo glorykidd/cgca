@@ -426,3 +426,6 @@ cgca.new/cgca.web/Data/*.db-wal
 
 # Claude Code local settings (machine-specific permissions)
 .claude/settings.local.json
+
+# Wrangler local dev state
+cgca.new/cgca-chatbot-worker/.wrangler/
