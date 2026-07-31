@@ -1,5 +1,8 @@
 const SESSION_MESSAGE_LIMIT = 15;
-const IP_COOLDOWN_SECONDS = 5;
+const IP_COOLDOWN_SECONDS_BY_SCOPE = {
+  chat: 5,
+  leads: 2,
+};
 
 /**
  * Check if a session has exceeded the message limit.
@@ -58,17 +61,22 @@ export async function markLeadSubmitted(env, sessionId) {
 }
 
 /**
- * Check if an IP is sending requests too quickly (1 req per 2 seconds).
- * `scope` namespaces the cooldown per endpoint so a chat request and a
- * lead submission from the same IP don't contend for the same window.
+ * Check if an IP is sending requests too quickly. `scope` namespaces the
+ * cooldown per endpoint (so a chat request and a lead submission from the
+ * same IP don't contend for the same window) and picks its own cooldown
+ * length -- /api/chat's cooldown is tighter since it drives paid Anthropic
+ * API calls, while /api/leads is already capped to one submission per
+ * session and shouldn't penalize multiple visitors behind a shared IP
+ * (e.g. a school office network) as heavily.
  * Returns { allowed: boolean }
  */
 export async function checkIpRate(env, ip, scope = "chat") {
+  const cooldownSeconds = IP_COOLDOWN_SECONDS_BY_SCOPE[scope];
   const key = `ip:${scope}:${ip}`;
   const lastRequest = await env.RATE_LIMIT.get(key);
   if (lastRequest) {
     const elapsed = Date.now() - parseInt(lastRequest, 10);
-    if (elapsed < IP_COOLDOWN_SECONDS * 1000) {
+    if (elapsed < cooldownSeconds * 1000) {
       return { allowed: false };
     }
   }
