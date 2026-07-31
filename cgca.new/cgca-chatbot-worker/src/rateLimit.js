@@ -1,5 +1,5 @@
 const SESSION_MESSAGE_LIMIT = 15;
-const IP_COOLDOWN_SECONDS = 2;
+const IP_COOLDOWN_SECONDS = 5;
 
 /**
  * Check if a session has exceeded the message limit.
