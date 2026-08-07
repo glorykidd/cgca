@@ -62,7 +62,7 @@ cgca.new/
 │   ├── Pages/                        # Routable page components
 │   │   ├── Home.razor                # Landing page — hero, quick facts, benefits, ABCs, CTAs
 │   │   ├── About.razor               # Mission, vision, philosophy, statement of faith, conduct
-│   │   ├── Programs.razor            # K3 and K4/K5 program details and schedules
+│   │   ├── Programs.razor            # K4/K5 program details and schedules
 │   │   ├── Admissions.razor          # Enrollment steps, tuition/fees, program cards
 │   │   ├── Parents.razor             # Parent resources, tuition details, portal link
 │   │   ├── Contact.razor             # Contact info, Google Maps, newsletter, contact form
@@ -170,7 +170,7 @@ cgca.new/
 |---|---|---|
 | `/` | Home | Hero banner, quick facts, "Why Choose CGCA" benefits, ABCs, enrollment CTA |
 | `/about` | About Us | Mission statement, vision, philosophy, statement of faith, code of conduct (modals) |
-| `/programs` | Programs | K3 and K4/K5 program details, schedules, curriculum overview |
+| `/programs` | Programs | K4/K5 program details, schedules, curriculum overview |
 | `/admissions` | Admissions | 3-step enrollment process, tuition & fees tables, program cards |
 | `/parents` | Parents | Parent resources, tuition modal, school calendar link, parent portal |
 | `/contact` | Contact | Address, phone, email, hours, Google Maps embed, contact form |
