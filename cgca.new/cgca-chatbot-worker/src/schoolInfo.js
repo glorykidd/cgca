@@ -2,6 +2,7 @@ export const SCHOOL_INFO = {
   name: "Cedar Grove Christian Academy",
   abbreviation: "CGCA",
   location: "Bullitt County, Kentucky",
+  address: "4900 Cedar Grove Rd, Shepherdsville, KY",
   ministry: "Cedar Grove Baptist Church",
 
   mission:
