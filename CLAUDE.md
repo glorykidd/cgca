@@ -10,7 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Public-facing informational site (pages, event calendar, contact, sponsors) with a server-side admin section for managing contact and sponsorship submissions
 
 ## Architecture & Patterns
-- Solution file is `cgca.new/cgca.sln`, with four projects: `cgca.web` (server), `cgca.web.client` (chatbot WASM island), `cgca-chatbot-worker` (Cloudflare Worker), and `cgca.web.Tests` (xUnit/bUnit test suite)
+- Solution file is `cgca.new/cgca.sln`, with three .NET projects: `cgca.web` (server), `cgca.web.client` (chatbot WASM island), and `cgca.web.Tests` (xUnit/bUnit test suite). A fourth repo component, `cgca-chatbot-worker`, is a Cloudflare Worker (JavaScript) and is not part of the solution
 - Public-site source lives under `cgca.new/cgca.web/`
 - **Entry point:** `Program.cs` — configures ASP.NET Core host, registers Identity/EF Core/EmailService/submission services, seeds admin user, maps Razor components and API endpoints
 - **Routing:** `App.razor` is the root HTML document (meta tags, structured data, GA4, CDN refs); `Routes.razor` holds the `<Router>` with `<RouteView>` and a `<NotFound>` fallback, wrapped in `MainLayout`
