@@ -231,7 +231,7 @@ The Worker allows requests from:
 
 ## Unit Tests
 
-The project includes **96 tests** across four categories built with **bUnit**, **xUnit**, and **FluentAssertions**.
+The project includes **104 tests** across four categories built with **bUnit**, **xUnit**, and **FluentAssertions**.
 
 ### Test Coverage
 
