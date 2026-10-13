@@ -98,6 +98,19 @@ public class PageRenderingTests : BunitContext
     }
 
     [Fact]
+    public void SponsorsPage_RendersSilverSponsorWithoutWebsiteLink()
+    {
+        var cut = Render<Sponsors>();
+
+        cut.Markup.Should().Contain("Silver Sponsors");
+        cut.Markup.Should().Contain("Pat Payne Distributors");
+        cut.Markup.Should().Contain("pat-payne-distributors.png");
+
+        var image = cut.Find("img[alt='Pat Payne Distributors']");
+        image.ParentElement!.TagName.Should().NotBe("A", "a sponsor without a Website should render a plain image, not a link");
+    }
+
+    [Fact]
     public void AllPages_RenderWithoutExceptions()
     {
         Action renderHome = () => Render<Home>();
