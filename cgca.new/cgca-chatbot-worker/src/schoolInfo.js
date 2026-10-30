@@ -20,7 +20,7 @@ export const SCHOOL_INFO = {
 
   programs: {
     currentGrades: ["K4/K5 (ages 4–5)"],
-    enrollmentStatus: "Registration is now open for the 2026/27 school year.",
+    enrollmentStatus: "Registration is now open for the 2027/28 school year.",
     openingsNote: "Limited openings are available — families should register soon.",
     beforeAfterCare: false,
   },
@@ -33,13 +33,9 @@ export const SCHOOL_INFO = {
   },
 
   tuition: {
-    schoolYear: "2026/27",
-    monthly: 175,
-    registrationFee: 75,
-    artFee: 50,
-    get totalRegistration() {
-      return this.registrationFee + this.artFee;
-    },
+    schoolYear: "2027/28",
+    monthly: 200,
+    registrationFee: 175,
     payInFullDiscountPercent: 10,
     siblingDiscountMonthly: 10,
   },
@@ -60,11 +56,11 @@ export const SCHOOL_INFO = {
     },
     about: {
       url: "cedargrovechristianacademy.org/about",
-      description: "vision, philosophy, statement of faith, code of conduct, donations, swag",
+      description: "vision, philosophy, statement of faith, code of conduct",
     },
     parents: {
       url: "cedargrovechristianacademy.org/parents",
-      description: "tuition details, school calendar, parent portal",
+      description: "tuition details, school calendar",
     },
     calendar: {
       url: "cedargrovechristianacademy.org/calendar",
@@ -77,11 +73,7 @@ export const SCHOOL_INFO = {
   },
 
   registration: {
-    platform: "Praxis School",
-    url: "app.praxischool.com",
-    parentPortalUrl: "app.praxischool.com",
-    donationsNote: "Donations accepted through Praxis School (linked on the About page).",
-    swagNote: "CGCA swag/merchandise can be ordered through a form linked on the About page.",
+    enrollmentUrl: "https://portal.schoolcues.com/Portal/PreEnrollment/Index/1FBED7B1-B8B7-44EE-B595-2951E4C20C9F",
     newsletterNote: "Families can subscribe to the email newsletter via the Contact page.",
   },
 

@@ -31,18 +31,13 @@ SCHEDULE:
 
 TUITION & FEES (${T.schoolYear} school year):
 - Registration fee: $${T.registrationFee}.
-- Art fee: $${T.artFee}.
-- Total registration cost: $${T.totalRegistration}.
 - Monthly tuition: $${T.monthly}/month.
 - Pay-in-full discount: Pay tuition in advance and save ${T.payInFullDiscountPercent}%.
 - Sibling discount: $${T.siblingDiscountMonthly} off the monthly tuition for each additional sibling enrolled.
 
 REGISTRATION & PARENT RESOURCES:
-- Register online through ${R.platform} at ${R.url} (linked from the website).
-- Parent Portal for current families is available at ${R.parentPortalUrl} (linked from the website).
+- Register (pre-enroll) online at ${R.enrollmentUrl} (linked from the website).
 - ${R.newsletterNote}
-- ${R.swagNote}
-- ${R.donationsNote}
 
 SPONSORSHIP:
 - ${SP.purpose}
