@@ -56,7 +56,7 @@ export const SCHOOL_INFO = {
     },
     about: {
       url: "cedargrovechristianacademy.org/about",
-      description: "vision, philosophy, statement of faith, code of conduct, donations, swag",
+      description: "vision, philosophy, statement of faith, code of conduct",
     },
     parents: {
       url: "cedargrovechristianacademy.org/parents",
@@ -74,7 +74,6 @@ export const SCHOOL_INFO = {
 
   registration: {
     enrollmentUrl: "https://portal.schoolcues.com/Portal/PreEnrollment/Index/1FBED7B1-B8B7-44EE-B595-2951E4C20C9F",
-    swagNote: "CGCA swag/merchandise can be ordered through a form linked on the About page.",
     newsletterNote: "Families can subscribe to the email newsletter via the Contact page.",
   },
 

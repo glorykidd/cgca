@@ -38,7 +38,6 @@ TUITION & FEES (${T.schoolYear} school year):
 REGISTRATION & PARENT RESOURCES:
 - Register (pre-enroll) online at ${R.enrollmentUrl} (linked from the website).
 - ${R.newsletterNote}
-- ${R.swagNote}
 
 SPONSORSHIP:
 - ${SP.purpose}
