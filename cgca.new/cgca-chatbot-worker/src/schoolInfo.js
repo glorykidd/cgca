@@ -77,10 +77,7 @@ export const SCHOOL_INFO = {
   },
 
   registration: {
-    platform: "Praxis School",
-    url: "app.praxischool.com",
-    parentPortalUrl: "app.praxischool.com",
-    donationsNote: "Donations accepted through Praxis School (linked on the About page).",
+    enrollmentUrl: "https://portal.schoolcues.com/Portal/PreEnrollment/Index/1FBED7B1-B8B7-44EE-B595-2951E4C20C9F",
     swagNote: "CGCA swag/merchandise can be ordered through a form linked on the About page.",
     newsletterNote: "Families can subscribe to the email newsletter via the Contact page.",
   },

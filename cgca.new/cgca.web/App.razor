@@ -118,12 +118,8 @@
             var text = (link.textContent || '').trim().toLowerCase();
 
             // Track enrollment/register clicks
-            if (href.includes('praxischool.com/site_login')) {
+            if (href.includes('portal.schoolcues.com/Portal/PreEnrollment')) {
                 cgcaTrack('enroll_click', { link_text: text, link_url: href });
-            }
-            // Track donation clicks
-            else if (href.includes('remoteDonationPage')) {
-                cgcaTrack('donate_click', { link_text: text, link_url: href });
             }
             // Track newsletter signup clicks
             else if (href.includes('forms.gle/85pj7RGUHaMUNiQy6')) {

@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Overview
 - Cedar Grove Christian Academy (CGCA) website — an ASP.NET Core + Blazor hybrid application targeting .NET 10.0
 - Primary users: prospective and current parents, students, and school staff
-- Integrates with Google Calendar (embedded schedule), SermonAudio (embedded sermons), and Praxis School (registration links)
+- Integrates with Google Calendar (embedded schedule), SermonAudio (embedded sermons), and SchoolCues (registration links)
 - Includes an AI chatbot ("Gracie") — a Blazor WebAssembly widget backed by a Cloudflare Worker that proxies to the Claude API
 - Public-facing informational site (pages, event calendar, contact, sponsors) with a server-side admin section for managing contact and sponsorship submissions
 

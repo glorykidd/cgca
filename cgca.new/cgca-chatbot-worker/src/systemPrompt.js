@@ -38,11 +38,9 @@ TUITION & FEES (${T.schoolYear} school year):
 - Sibling discount: $${T.siblingDiscountMonthly} off the monthly tuition for each additional sibling enrolled.
 
 REGISTRATION & PARENT RESOURCES:
-- Register online through ${R.platform} at ${R.url} (linked from the website).
-- Parent Portal for current families is available at ${R.parentPortalUrl} (linked from the website).
+- Register (pre-enroll) online at ${R.enrollmentUrl} (linked from the website).
 - ${R.newsletterNote}
 - ${R.swagNote}
-- ${R.donationsNote}
 
 SPONSORSHIP:
 - ${SP.purpose}

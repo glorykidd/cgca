@@ -2,7 +2,7 @@
 
 ## Summary
 
-The CGCA website is a hybrid Blazor application built on .NET 10.0. It serves as the public-facing site for Cedar Grove Christian Academy, providing SEO-optimized content about the school's mission, programs, admissions, and values to prospective and current families. The site includes pages for school information, programs, admissions with tuition details, parent resources, an embedded event calendar, a contact/sponsorship form, and a privacy policy. Third-party services — Google Calendar and Praxis School — are integrated via embedded content and external links. An AI chatbot ("Gracie") powered by a Cloudflare Worker backend assists visitors with common questions.
+The CGCA website is a hybrid Blazor application built on .NET 10.0. It serves as the public-facing site for Cedar Grove Christian Academy, providing SEO-optimized content about the school's mission, programs, admissions, and values to prospective and current families. The site includes pages for school information, programs, admissions with tuition details, parent resources, an embedded event calendar, a contact/sponsorship form, and a privacy policy. Third-party services — Google Calendar and SchoolCues — are integrated via embedded content and external links. An AI chatbot ("Gracie") powered by a Cloudflare Worker backend assists visitors with common questions.
 
 A server-side admin section allows staff to manage contact and sponsorship inquiries, including read/acknowledged tracking, lifecycle status tracking for sponsorships, threaded notes, and email forwarding/reply capabilities.
 
