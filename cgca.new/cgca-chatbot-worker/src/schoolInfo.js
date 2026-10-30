@@ -20,7 +20,7 @@ export const SCHOOL_INFO = {
 
   programs: {
     currentGrades: ["K4/K5 (ages 4–5)"],
-    enrollmentStatus: "Registration is now open for the 2026/27 school year.",
+    enrollmentStatus: "Registration is now open for the 2027/28 school year.",
     openingsNote: "Limited openings are available — families should register soon.",
     beforeAfterCare: false,
   },
@@ -33,13 +33,9 @@ export const SCHOOL_INFO = {
   },
 
   tuition: {
-    schoolYear: "2026/27",
-    monthly: 175,
-    registrationFee: 75,
-    artFee: 50,
-    get totalRegistration() {
-      return this.registrationFee + this.artFee;
-    },
+    schoolYear: "2027/28",
+    monthly: 200,
+    registrationFee: 175,
     payInFullDiscountPercent: 10,
     siblingDiscountMonthly: 10,
   },

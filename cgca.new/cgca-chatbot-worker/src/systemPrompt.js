@@ -31,8 +31,6 @@ SCHEDULE:
 
 TUITION & FEES (${T.schoolYear} school year):
 - Registration fee: $${T.registrationFee}.
-- Art fee: $${T.artFee}.
-- Total registration cost: $${T.totalRegistration}.
 - Monthly tuition: $${T.monthly}/month.
 - Pay-in-full discount: Pay tuition in advance and save ${T.payInFullDiscountPercent}%.
 - Sibling discount: $${T.siblingDiscountMonthly} off the monthly tuition for each additional sibling enrolled.
