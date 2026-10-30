@@ -60,7 +60,7 @@ export const SCHOOL_INFO = {
     },
     parents: {
       url: "cedargrovechristianacademy.org/parents",
-      description: "tuition details, school calendar, parent portal",
+      description: "tuition details, school calendar",
     },
     calendar: {
       url: "cedargrovechristianacademy.org/calendar",
